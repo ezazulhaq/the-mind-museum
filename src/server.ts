@@ -87,7 +87,10 @@ app.get('/api/analytics', (req, res) => {
     const totalSessions = db.prepare('SELECT COUNT(*) as count FROM sessions').get() as { count: number };
     const totalPlayers = db.prepare('SELECT COUNT(*) as count FROM players').get() as { count: number };
     const avgWpm = db.prepare('SELECT AVG(value) as avg FROM telemetry WHERE metric_type = ?').get('WPM') as { avg: number };
-    const sessionCountByGame = db.prepare('SELECT game_id, COUNT(*) as count FROM sessions GROUP BY game_id').all();
+    const avgAccuracy = db.prepare('SELECT AVG(value) as avg FROM telemetry WHERE metric_type = ?').get('ACCURACY') as { avg: number };
+    const sessionCountByGame = db.prepare('SELECT game_id, COUNT(*) as count, AVG(duration_ms) as avg_duration FROM sessions GROUP BY game_id').all();
+    const recentTelemetry = db.prepare('SELECT t.metric_type, t.value, s.game_id FROM telemetry t JOIN sessions s ON t.session_id = s.id ORDER BY t.id DESC LIMIT 20').all();
+    const logicErrorsByGate = db.prepare('SELECT gate_type, COUNT(*) as count FROM logic_errors GROUP BY gate_type').all();
 
     res.json({
       success: true,
@@ -95,9 +98,47 @@ app.get('/api/analytics', (req, res) => {
         totalSessions: totalSessions.count,
         totalPlayers: totalPlayers.count,
         avgWpm: avgWpm.avg || 0,
-        sessionCountByGame
+        avgAccuracy: avgAccuracy.avg || 0,
+        sessionCountByGame,
+        recentTelemetry,
+        logicErrorsByGate
       }
     });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/players', (req, res) => {
+  try {
+    const players = db.prepare('SELECT * FROM players ORDER BY created_at DESC').all();
+    res.json({ success: true, players });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/sessions', (req, res) => {
+  try {
+    const playerId = req.query['player_id'];
+    let sessions;
+    if (playerId) {
+      sessions = db.prepare('SELECT * FROM sessions WHERE player_id = ? ORDER BY id DESC').all(playerId);
+    } else {
+      sessions = db.prepare('SELECT * FROM sessions ORDER BY id DESC LIMIT 50').all();
+    }
+    res.json({ success: true, sessions });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/logic-errors', (req, res) => {
+  const { session_id, gate_type, failed_state } = req.body;
+  try {
+    const stmt = db.prepare('INSERT INTO logic_errors (session_id, gate_type, failed_state) VALUES (?, ?, ?)');
+    const info = stmt.run(session_id, gate_type, failed_state);
+    res.json({ success: true, id: info.lastInsertRowid });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { PlayerStateService } from '../../../services/player-state.service';
 
 interface Word {
   id: number;
@@ -29,6 +30,7 @@ export class TerminalVelocity implements OnInit, OnDestroy {
 
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private playerState = inject(PlayerStateService);
   private wordsList = ['angular', 'component', 'observable', 'service', 'module', 'directive', 'pipe', 'template', 'router', 'interface'];
   private wordIdCounter = 0;
 
@@ -134,24 +136,21 @@ export class TerminalVelocity implements OnInit, OnDestroy {
     this.gameOver = true;
     clearInterval(this.gameLoopId);
 
-    const durationMins = (Date.now() - this.startTime) / 60000;
+    const durationMs = Date.now() - this.startTime;
+    const durationMins = durationMs / 60000;
     const wpm = durationMins > 0 ? (this.correctKeystrokes / 5) / durationMins : 0;
     const accuracy = this.totalKeystrokes > 0 ? (this.correctKeystrokes / this.totalKeystrokes) * 100 : 0;
 
     console.log(`Game Over! Score: ${this.score}, WPM: ${Math.round(wpm)}, Acc: ${Math.round(accuracy)}%`);
 
-    // Log telemetry
-    this.http.post('/api/telemetry', {
-      session_id: 1, // Mock session ID for MVP
-      metric_type: 'WPM',
-      value: Math.round(wpm),
-      payload: {
+    // Create session and log telemetry via PlayerStateService
+    this.playerState.createSession('terminal-velocity', durationMs).then(sessionId => {
+      this.playerState.logTelemetry(sessionId, 'WPM', Math.round(wpm), {
         score: this.score,
         accuracy: Math.round(accuracy),
-        duration_s: Math.round(durationMins * 60)
-      }
-    }).subscribe({
-      error: (e) => console.error('Failed to log telemetry', e)
+        duration_s: Math.round(durationMs / 1000)
+      });
+      this.playerState.logTelemetry(sessionId, 'ACCURACY', Math.round(accuracy));
     });
   }
 

@@ -100,16 +100,43 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       uiDiv.style.fontFamily = 'monospace';
       uiDiv.style.fontSize = '18px';
       uiDiv.style.pointerEvents = 'none';
-      uiDiv.innerHTML = 'Drag to rotate the shape.<br>Align it to see a perfect "L".';
+      uiDiv.innerHTML = 'Drag to rotate the shape.<br>Click cubes to select. Align to see an "L".';
       this.container.nativeElement.style.position = 'relative';
       this.container.nativeElement.appendChild(uiDiv);
 
+      // Raycaster for click-to-select cubes
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let clickStart = { x: 0, y: 0 };
+
       this.renderer.domElement.addEventListener('pointerdown', (event: any) => {
         isDragging = true;
+        clickStart = { x: event.clientX, y: event.clientY };
         previousMousePosition = { x: event.clientX, y: event.clientY };
       });
 
-      this.renderer.domElement.addEventListener('pointerup', () => {
+      this.renderer.domElement.addEventListener('pointerup', (event: any) => {
+        // If the mouse barely moved, treat as a click (raycasting)
+        const dx = event.clientX - clickStart.x;
+        const dy = event.clientY - clickStart.y;
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+          const rect = this.renderer.domElement.getBoundingClientRect();
+          mouse.x = ((event.clientX - rect.left) / width) * 2 - 1;
+          mouse.y = -((event.clientY - rect.top) / height) * 2 + 1;
+
+          raycaster.setFromCamera(mouse, this.camera);
+          const intersects = raycaster.intersectObjects(this.cubes, false);
+
+          if (intersects.length > 0) {
+            const obj = intersects[0].object as any;
+            // Toggle selection color
+            if (obj.material.color.getHex() === 0x38bdf8) {
+              obj.material = new THREE.MeshLambertMaterial({ color: 0x10b981 });
+            } else {
+              obj.material = new THREE.MeshLambertMaterial({ color: 0x38bdf8 });
+            }
+          }
+        }
         isDragging = false;
       });
 

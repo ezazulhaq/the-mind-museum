@@ -18,7 +18,7 @@ h2 {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
@@ -32,7 +32,7 @@ h2 {
   h3 {
     margin: 0 0 10px 0;
     color: #94a3b8;
-    font-size: 14px;
+    font-size: 13px;
     text-transform: uppercase;
   }
 
@@ -40,6 +40,12 @@ h2 {
     font-size: 36px;
     font-weight: bold;
     color: #f8fafc;
+  }
+
+  canvas {
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
   }
 }
 
@@ -55,6 +61,7 @@ h2 {
     li {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 10px 0;
       border-bottom: 1px solid #1e293b;
 
@@ -65,10 +72,22 @@ h2 {
       .game-id {
         color: #38bdf8;
         font-weight: bold;
+        min-width: 180px;
+      }
+
+      .domain {
+        color: #8b5cf6;
+        font-size: 13px;
+        flex: 1;
       }
 
       .count {
         color: #94a3b8;
+        text-align: right;
+      }
+
+      .error-count {
+        color: #ef4444;
       }
     }
   }

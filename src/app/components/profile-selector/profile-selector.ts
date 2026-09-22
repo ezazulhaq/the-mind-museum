@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { PlayerStateService } from '../../services/player-state.service';
 
 @Component({
   selector: 'app-profile-selector',
@@ -17,6 +18,7 @@ export class ProfileSelector {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private playerState = inject(PlayerStateService);
 
   createProfile() {
     if (!this.username.trim()) return;
@@ -26,8 +28,7 @@ export class ProfileSelector {
       username: this.username
     }).subscribe({
       next: (res) => {
-        // In a real app, save this ID to a service or localStorage
-        console.log('Player created:', res.id);
+        this.playerState.setPlayer(res.id, this.username);
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {

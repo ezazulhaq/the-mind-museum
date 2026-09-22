@@ -20,14 +20,50 @@
       <div class="value">{{ stats.avgWpm | number:'1.0-0' }}</div>
     </div>
 
+    <div class="stat-card">
+      <h3>Average Accuracy</h3>
+      <div class="value">{{ stats.avgAccuracy | number:'1.0-0' }}%</div>
+    </div>
+
+    <!-- Bar Chart -->
     <div class="stat-card full-width">
-      <h3>Sessions by Game</h3>
+      <h3>Sessions by Game (Chart)</h3>
+      <canvas #chartCanvas width="600" height="280"></canvas>
+    </div>
+
+    <!-- Cognitive Domain Breakdown -->
+    <div class="stat-card full-width">
+      <h3>Cognitive Domain Breakdown</h3>
       <ul>
         <li *ngFor="let game of stats.sessionCountByGame">
           <span class="game-id">{{ game.game_id }}</span>
-          <span class="count">{{ game.count }} sessions</span>
+          <span class="domain">{{ getDomain(game.game_id) }}</span>
+          <span class="count">{{ game.count }} sessions · avg {{ game.avg_duration | number:'1.0-0' }}ms</span>
         </li>
         <li *ngIf="stats.sessionCountByGame.length === 0">No sessions recorded yet.</li>
+      </ul>
+    </div>
+
+    <!-- Logic Errors -->
+    <div class="stat-card full-width" *ngIf="stats.logicErrorsByGate?.length">
+      <h3>Logic Gate Error Analysis</h3>
+      <ul>
+        <li *ngFor="let err of stats.logicErrorsByGate">
+          <span class="game-id">{{ err.gate_type }} Gate</span>
+          <span class="count error-count">{{ err.count }} errors</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Recent Telemetry -->
+    <div class="stat-card full-width" *ngIf="stats.recentTelemetry?.length">
+      <h3>Recent Telemetry Feed</h3>
+      <ul>
+        <li *ngFor="let t of stats.recentTelemetry">
+          <span class="game-id">{{ t.game_id }}</span>
+          <span class="domain">{{ t.metric_type }}</span>
+          <span class="count">{{ t.value }}</span>
+        </li>
       </ul>
     </div>
   </div>

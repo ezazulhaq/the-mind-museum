@@ -4,7 +4,7 @@ import { DragDropModule, CdkDragDrop, moveItemInArray, copyArrayItem, transferAr
 
 interface Command {
   id: string;
-  type: 'MoveForward' | 'TurnRight' | 'TurnLeft';
+  type: 'MoveForward' | 'TurnRight' | 'TurnLeft' | 'Repeat3' | 'IfWall';
   label: string;
 }
 
@@ -21,9 +21,11 @@ export class AlgorithmicAlchemist implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   availableCommands: Command[] = [
-    { id: 'c1', type: 'MoveForward', label: 'Move Forward' },
-    { id: 'c2', type: 'TurnRight', label: 'Turn Right' },
-    { id: 'c3', type: 'TurnLeft', label: 'Turn Left' }
+    { id: 'c1', type: 'MoveForward', label: '⬆ Move Forward' },
+    { id: 'c2', type: 'TurnRight', label: '↻ Turn Right' },
+    { id: 'c3', type: 'TurnLeft', label: '↺ Turn Left' },
+    { id: 'c4', type: 'Repeat3', label: '🔁 Repeat ×3' },
+    { id: 'c5', type: 'IfWall', label: '🧱 If Wall → Turn' }
   ];
 
   program: Command[] = [];
@@ -94,10 +96,26 @@ export class AlgorithmicAlchemist implements OnInit {
     this.resetLevel();
     this.isRunning = true;
 
-    for (const cmd of this.program) {
+    // Expand program: Repeat3 repeats the NEXT command 3 times, IfWall turns right if facing a wall
+    const expanded: Command[] = [];
+    for (let i = 0; i < this.program.length; i++) {
+      const cmd = this.program[i];
+      if (cmd.type === 'Repeat3') {
+        // Repeat the next command 3 times
+        const next = this.program[i + 1];
+        if (next && next.type !== 'Repeat3' && next.type !== 'IfWall') {
+          for (let r = 0; r < 3; r++) expanded.push(next);
+          i++; // skip the next command since we consumed it
+        }
+      } else {
+        expanded.push(cmd);
+      }
+    }
+
+    for (const cmd of expanded) {
       await this.executeCommand(cmd);
       this.draw();
-      await this.delay(400); // 400ms per step
+      await this.delay(400);
     }
 
     if (this.player.x === this.target.x && this.player.y === this.target.y) {
@@ -117,6 +135,16 @@ export class AlgorithmicAlchemist implements OnInit {
         this.player.dir = (this.player.dir + 1) % 4;
       } else if (cmd.type === 'TurnLeft') {
         this.player.dir = (this.player.dir + 3) % 4;
+      } else if (cmd.type === 'IfWall') {
+        // If facing a wall, turn right automatically
+        const facingWall =
+          (this.player.dir === 0 && this.player.x >= this.gridSize - 1) ||
+          (this.player.dir === 1 && this.player.y >= this.gridSize - 1) ||
+          (this.player.dir === 2 && this.player.x <= 0) ||
+          (this.player.dir === 3 && this.player.y <= 0);
+        if (facingWall) {
+          this.player.dir = (this.player.dir + 1) % 4;
+        }
       }
       resolve();
     });

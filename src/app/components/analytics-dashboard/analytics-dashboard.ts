@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, ViewChild, ElementRef, AfterViewInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 
@@ -11,21 +11,102 @@ import { RouterLink } from '@angular/router';
   styleUrl: './analytics-dashboard.scss'
 })
 export class AnalyticsDashboard implements OnInit {
+  @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
+
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
 
   stats: any = null;
   loading = true;
+
+  // Cognitive domain mapping
+  domainMap: Record<string, string> = {
+    'terminal-velocity': 'Typing / Motor',
+    'node-network': 'Systems / Spatial',
+    'logic-gate-defender': 'Logic / Boolean',
+    'contraption-crafter': 'Physics / Cause-Effect',
+    'algorithmic-alchemist': 'Sequencing / Procedural',
+    'optic-architect': 'Spatial / Rotation'
+  };
 
   ngOnInit() {
     this.http.get('/api/analytics').subscribe({
       next: (res: any) => {
         this.stats = res.stats;
         this.loading = false;
+        // Draw chart after view renders
+        setTimeout(() => this.drawChart(), 100);
       },
       error: (err) => {
         console.error('Failed to load analytics', err);
         this.loading = false;
       }
     });
+  }
+
+  getDomain(gameId: string): string {
+    return this.domainMap[gameId] || gameId;
+  }
+
+  drawChart() {
+    if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
+    if (!this.stats?.sessionCountByGame?.length) return;
+
+    const canvas = this.chartCanvas.nativeElement;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const data = this.stats.sessionCountByGame;
+    const barWidth = 60;
+    const gap = 30;
+    const chartHeight = 180;
+    const offsetX = 40;
+    const offsetY = 20;
+
+    canvas.width = offsetX + data.length * (barWidth + gap) + gap;
+    canvas.height = chartHeight + 80;
+
+    // Find max value
+    const maxVal = Math.max(...data.map((d: any) => d.count), 1);
+
+    // Background
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Y-axis
+    ctx.strokeStyle = '#334155';
+    ctx.beginPath();
+    ctx.moveTo(offsetX, offsetY);
+    ctx.lineTo(offsetX, offsetY + chartHeight);
+    ctx.stroke();
+
+    // Bars
+    const colors = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899'];
+    data.forEach((d: any, i: number) => {
+      const barH = (d.count / maxVal) * chartHeight;
+      const x = offsetX + gap + i * (barWidth + gap);
+      const y = offsetY + chartHeight - barH;
+
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillRect(x, y, barWidth, barH);
+
+      // Value label
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '14px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(d.count.toString(), x + barWidth / 2, y - 5);
+
+      // Game label (abbreviated)
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px monospace';
+      const label = (d.game_id || '').split('-').map((w: string) => w[0]?.toUpperCase()).join('');
+      ctx.fillText(label || '?', x + barWidth / 2, offsetY + chartHeight + 15);
+    });
+
+    // Title
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '12px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('Sessions per Game', offsetX + 5, offsetY + chartHeight + 40);
   }
 }

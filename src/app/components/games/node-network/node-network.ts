@@ -13,7 +13,7 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
 
   private platformId = inject(PLATFORM_ID);
-  private game: any; // Type as any to avoid SSR issues if types aren't available
+  private game: any = null;
 
   async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -26,73 +26,123 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
         height: 600,
         backgroundColor: '#0f172a',
         scene: {
-          preload: function (this: any) {
-            // No assets for now, we'll draw shapes
-          },
           create: function (this: any) {
-            const centerX = this.cameras.main.width / 2;
-            const centerY = this.cameras.main.height / 2;
+            const scene = this;
+            const centerX = scene.cameras.main.width / 2;
 
-            this.add.text(centerX, 50, 'Node Network', {
-              fontFamily: 'monospace',
-              fontSize: '32px',
-              color: '#38bdf8'
+            scene.add.text(centerX, 30, 'Node Network', {
+              fontFamily: 'monospace', fontSize: '32px', color: '#38bdf8'
             }).setOrigin(0.5);
 
-            // Nodes and Edges
-            const nodes = [
-              { id: 0, x: centerX - 200, y: centerY, obj: null as any },
-              { id: 1, x: centerX, y: centerY - 150, obj: null as any },
-              { id: 2, x: centerX, y: centerY + 150, obj: null as any },
-              { id: 3, x: centerX + 200, y: centerY, obj: null as any }
-            ];
+            let moves = 0;
+            const maxMoves = 10;
+            let currentNode = 7;
+            const destId = 28;
+            let gameOver = false;
+            let isMoving = false;
 
+            const moveText = scene.add.text(centerX, 570, `Moves: ${moves} / ${maxMoves}`, {
+              fontFamily: 'monospace', fontSize: '24px', color: '#facc15'
+            }).setOrigin(0.5);
+
+            const statusText = scene.add.text(centerX, 300, '', {
+              fontFamily: 'monospace', fontSize: '40px', color: '#ffffff',
+              backgroundColor: '#000000', padding: { x: 20, y: 20 }
+            }).setOrigin(0.5).setDepth(10).setVisible(false);
+
+            // Sparse edges mapping the 6x6 grid
             const edges = [
-              { from: 0, to: 1 },
-              { from: 0, to: 2 },
-              { from: 1, to: 3 },
-              { from: 2, to: 3 }
+              [7, 8], [7, 13], [8, 9], [9, 10], [10, 16],
+              [8, 14], [13, 19], [19, 25], [25, 26], [26, 32],
+              [14, 15], [15, 16], [15, 21], [21, 27], [21, 22],
+              [22, 28], [27, 28], [27, 33], [22, 23], [16, 17]
             ];
 
-            const graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x334155 } });
+            const adj: { [key: number]: number[] } = {};
+            for (let i = 0; i < 36; i++) adj[i] = [];
+            edges.forEach(([u, v]) => {
+              adj[u].push(v);
+              adj[v].push(u);
+            });
 
-            const drawEdges = () => {
-              graphics.clear();
-              graphics.lineStyle(2, 0x334155);
-              edges.forEach(e => {
-                graphics.strokeLineShape(new Phaser.Geom.Line(
-                  nodes[e.from].obj.x, nodes[e.from].obj.y,
-                  nodes[e.to].obj.x, nodes[e.to].obj.y
-                ));
+            const nodesData: any[] = [];
+            for (let i = 0; i < 36; i++) {
+              const c = i % 6;
+              const r = Math.floor(i / 6);
+              // Nodes arranged in a grid with 90px spacing
+              nodesData.push({ id: i, x: 175 + c * 90, y: 75 + r * 90 });
+            }
+
+            const graphics = scene.add.graphics();
+            graphics.lineStyle(3, 0x334155);
+            edges.forEach(([u, v]) => {
+              graphics.lineBetween(nodesData[u].x, nodesData[u].y, nodesData[v].x, nodesData[v].y);
+            });
+
+            const nodeObjects: any[] = [];
+            let packet: any;
+
+            const updateHighlights = () => {
+              nodeObjects.forEach((c) => c.setStrokeStyle()); // Clear existing stroke
+              if (gameOver || isMoving) return;
+              
+              adj[currentNode].forEach((neighbor: number) => {
+                nodeObjects[neighbor].setStrokeStyle(3, 0xffffff); // Highlight connected
               });
             };
 
-            nodes.forEach((n, i) => {
-              const circle = this.add.circle(n.x, n.y, 25, i === 0 ? 0x3b82f6 : (i === 3 ? 0x10b981 : 0x475569));
-              n.obj = circle;
-              circle.setInteractive({ draggable: true });
+            const checkWinLose = () => {
+              if (currentNode === destId) {
+                gameOver = true;
+                statusText.setText('Route Complete!');
+                statusText.setColor('#10b981');
+                statusText.setVisible(true);
+                updateHighlights();
+              } else if (moves >= maxMoves) {
+                gameOver = true;
+                statusText.setText('Too many hops!');
+                statusText.setColor('#ef4444');
+                statusText.setVisible(true);
+                updateHighlights();
+              } else {
+                updateHighlights();
+              }
+            };
+
+            nodesData.forEach(n => {
+              let color = 0x475569; // default gray
+              if (n.id === 7) color = 0x3b82f6; // source blue
+              if (n.id === destId) color = 0x10b981; // dest green
+              
+              const circle = scene.add.circle(n.x, n.y, 20, color);
+              circle.setInteractive();
+              nodeObjects.push(circle);
 
               circle.on('pointerdown', () => {
-                this.tweens.add({ targets: circle, scale: 1.2, yoyo: true, duration: 100 });
-              });
-
-              circle.on('drag', (pointer: any, dragX: number, dragY: number) => {
-                circle.x = dragX;
-                circle.y = dragY;
-                drawEdges(); // Redraw lines when dragging
+                if (gameOver || isMoving) return;
+                if (!adj[currentNode].includes(n.id)) return; // Validate connected move
+                
+                isMoving = true;
+                currentNode = n.id;
+                moves++;
+                moveText.setText(`Moves: ${moves} / ${maxMoves}`);
+                updateHighlights(); // Clear highlights during move
+                
+                scene.tweens.add({
+                  targets: packet,
+                  x: n.x,
+                  y: n.y,
+                  duration: 250,
+                  onComplete: () => {
+                    isMoving = false;
+                    checkWinLose();
+                  }
+                });
               });
             });
 
-            // Initial draw
-            drawEdges();
-
-            this.add.text(centerX, this.cameras.main.height - 50, 'Route the packet from Blue to Green. (Click nodes to test)', {
-              fontFamily: 'monospace',
-              fontSize: '16px',
-              color: '#94a3b8'
-            }).setOrigin(0.5);
-          },
-          update: function () {
+            packet = scene.add.circle(nodesData[7].x, nodesData[7].y, 10, 0xfacc15).setDepth(5);
+            updateHighlights();
           }
         }
       });
