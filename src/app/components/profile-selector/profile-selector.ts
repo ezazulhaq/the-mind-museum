@@ -10,7 +10,7 @@ import { PlayerStateService } from '../../services/player-state.service';
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './profile-selector.html',
-  styleUrl: './profile-selector.scss'
+  styleUrl: './profile-selector.css'
 })
 export class ProfileSelector {
   username: string = '';

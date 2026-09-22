@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './analytics-dashboard.html',
-  styleUrl: './analytics-dashboard.scss'
+  styleUrl: './analytics-dashboard.css'
 })
 export class AnalyticsDashboard implements OnInit {
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;

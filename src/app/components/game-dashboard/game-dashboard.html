@@ -1,24 +1,75 @@
-<div class="dashboard-container">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="margin: 0;">The Mind Museum - Wings</h2>
-    <button class="btn btn-secondary" routerLink="/analytics">View Progress Wing</button>
+<div class="min-h-screen bg-slate-950 text-slate-200 p-6 md:p-10 relative overflow-hidden font-sans selection:bg-cyan-500/30">
+  <!-- Dynamic Animated Background Gradients -->
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-cyan-900/20 blur-[120px] animate-pulse" style="animation-duration: 8s;"></div>
+    <div class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/20 blur-[120px] animate-pulse" style="animation-duration: 12s;"></div>
+    <div class="absolute top-[30%] left-[40%] w-[30vw] h-[30vw] rounded-full bg-fuchsia-900/10 blur-[100px] animate-pulse" style="animation-duration: 10s;"></div>
   </div>
 
-  <div class="games-grid">
-    <div class="game-card" *ngFor="let game of games">
-      <div class="wing-badge">{{ game.wing }}</div>
-      <h3>{{ game.title }}</h3>
-      <p>{{ game.description }}</p>
-      <button class="btn btn-primary" [disabled]="false" [routerLink]="
-          game.id === 'g1' ? ['/games/terminal-velocity'] : 
-          (game.id === 'g2' ? ['/games/node-network'] : 
-          (game.id === 'g3' ? ['/games/logic-gate-defender'] : 
-          (game.id === 'g4' ? ['/games/contraption-crafter'] : 
-          (game.id === 'g5' ? ['/games/algorithmic-alchemist'] : 
-          ['/games/optic-architect']))))
-        ">
-        Play
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- Premium Header -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6 bg-slate-900/30 backdrop-blur-xl p-8 rounded-3xl border border-slate-700/30 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+      <div>
+        <h2 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-400 to-fuchsia-400 mb-2 tracking-tight">The Mind Museum</h2>
+        <p class="text-slate-400 text-lg max-w-xl">Explore cutting-edge interactive exhibits designed to challenge and expand your cognitive limits.</p>
+      </div>
+      <button 
+        routerLink="/analytics"
+        class="group relative flex items-center gap-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-300 transition-all duration-300 font-semibold py-3 px-6 rounded-2xl shadow-lg border border-slate-700 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] overflow-hidden"
+      >
+        <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span class="relative z-10 tracking-wide">Progress Wing</span>
       </button>
+    </header>
+
+    <!-- Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div 
+        *ngFor="let game of games; let i = index" 
+        class="group relative bg-slate-900/40 backdrop-blur-md border border-slate-700/40 p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(6,182,212,0.3)] hover:bg-slate-800/60 overflow-hidden flex flex-col h-full hover:border-cyan-500/30"
+      >
+        <!-- Animated top border gradient -->
+        <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+        
+        <!-- Subtle background pattern on hover -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+        <div class="mb-6 flex justify-between items-start relative z-10">
+          <span class="inline-block px-4 py-1.5 bg-slate-950/80 text-cyan-300 border border-cyan-800/50 rounded-full text-xs font-bold tracking-widest uppercase shadow-inner">
+            {{ game.wing }}
+          </span>
+          <div class="w-10 h-10 rounded-full bg-slate-800/80 flex items-center justify-center border border-slate-700/50 group-hover:scale-110 group-hover:bg-cyan-900/30 group-hover:border-cyan-500/30 transition-all duration-300">
+             <span class="text-slate-400 group-hover:text-cyan-300 text-sm font-bold">0{{ i + 1 }}</span>
+          </div>
+        </div>
+        
+        <h3 class="text-2xl font-bold text-slate-100 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-300 group-hover:to-indigo-300 transition-colors relative z-10 tracking-tight">{{ game.title }}</h3>
+        
+        <p class="text-slate-400 text-base mb-10 flex-grow leading-relaxed relative z-10 group-hover:text-slate-300 transition-colors">{{ game.description }}</p>
+        
+        <button 
+          [routerLink]="
+            game.id === 'g1' ? ['/games/terminal-velocity'] : 
+            (game.id === 'g2' ? ['/games/node-network'] : 
+            (game.id === 'g3' ? ['/games/logic-gate-defender'] : 
+            (game.id === 'g4' ? ['/games/contraption-crafter'] : 
+            (game.id === 'g5' ? ['/games/algorithmic-alchemist'] : 
+            ['/games/optic-architect']))))
+          "
+          class="w-full relative overflow-hidden bg-slate-950 text-slate-300 font-bold py-3.5 px-4 rounded-2xl transition-all duration-300 mt-auto flex items-center justify-center gap-3 group/btn shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] border border-slate-700/80 hover:border-transparent"
+        >
+          <!-- Button background gradient layer -->
+          <div class="absolute inset-0 bg-gradient-to-r from-cyan-600 to-indigo-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+          
+          <span class="relative z-10 group-hover/btn:text-white tracking-wide">Enter Exhibit</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 relative z-10 group-hover/btn:text-white transform group-hover/btn:translate-x-1.5 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>

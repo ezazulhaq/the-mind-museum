@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './contraption-crafter.html',
-  styleUrl: './contraption-crafter.scss'
+  styleUrl: './contraption-crafter.css'
 })
 export class ContraptionCrafter implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;

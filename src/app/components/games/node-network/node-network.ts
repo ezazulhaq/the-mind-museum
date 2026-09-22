@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './node-network.html',
-  styleUrl: './node-network.scss'
+  styleUrl: './node-network.css'
 })
 export class NodeNetwork implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;

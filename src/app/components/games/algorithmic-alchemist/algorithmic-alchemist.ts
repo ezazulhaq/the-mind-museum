@@ -13,7 +13,7 @@ interface Command {
   standalone: true,
   imports: [CommonModule, DragDropModule],
   templateUrl: './algorithmic-alchemist.html',
-  styleUrl: './algorithmic-alchemist.scss'
+  styleUrl: './algorithmic-alchemist.css'
 })
 export class AlgorithmicAlchemist implements OnInit {
   @ViewChild('gameCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;

@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './logic-gate-defender.html',
-  styleUrl: './logic-gate-defender.scss'
+  styleUrl: './logic-gate-defender.css'
 })
 export class LogicGateDefender implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;

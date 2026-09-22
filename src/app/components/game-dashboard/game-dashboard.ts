@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './game-dashboard.html',
-  styleUrl: './game-dashboard.scss'
+  styleUrl: './game-dashboard.css'
 })
 export class GameDashboard {
   games = [

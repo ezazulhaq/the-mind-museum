@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './optic-architect.html',
-  styleUrl: './optic-architect.scss'
+  styleUrl: './optic-architect.css'
 })
 export class OpticArchitect implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;

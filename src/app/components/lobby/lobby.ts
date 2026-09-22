@@ -6,6 +6,6 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './lobby.html',
-  styleUrl: './lobby.scss'
+  styleUrl: './lobby.css'
 })
 export class Lobby { }

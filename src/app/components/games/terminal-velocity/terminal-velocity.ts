@@ -16,7 +16,7 @@ interface Word {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './terminal-velocity.html',
-  styleUrl: './terminal-velocity.scss'
+  styleUrl: './terminal-velocity.css'
 })
 export class TerminalVelocity implements OnInit, OnDestroy {
   words: Word[] = [];
@@ -59,7 +59,7 @@ export class TerminalVelocity implements OnInit, OnDestroy {
 
   stopGame() {
     clearInterval(this.gameLoopId);
-    if (!this.gameOver) {
+    if (!this.gameOver && isPlatformBrowser(this.platformId)) {
       this.endGame();
     }
   }
