@@ -1,5 +1,6 @@
 @layer legacy, tailwind;
 @import "tailwindcss" layer(tailwind);
+@source "./";
 
 @layer legacy {
   body {
