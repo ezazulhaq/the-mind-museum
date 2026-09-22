@@ -23,6 +23,8 @@
     "@angular/ssr": "^22.1.8",
     "better-sqlite3": "^13.0.3",
     "express": "^5.1.0",
+    "matter-js": "^0.20.0",
+    "phaser": "^4.2.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -32,6 +34,7 @@
     "@angular/compiler-cli": "^22.1.0",
     "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
+    "@types/matter-js": "^0.20.2",
     "@types/node": "^20.17.19",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
