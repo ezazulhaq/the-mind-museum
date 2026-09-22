@@ -1,0 +1,103 @@
+.game-container {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  height: 80vh;
+  background: #0f172a;
+  border: 2px solid #334155;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 15px;
+  background: #1e293b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #334155;
+
+  h2 {
+    margin: 0;
+    color: #38bdf8;
+  }
+
+  .stats {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+}
+
+.play-area {
+  flex: 1;
+  position: relative;
+}
+
+.falling-word {
+  position: absolute;
+  font-family: monospace;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  transition: top 0.05s linear;
+
+  &.matched {
+    .typed {
+      color: #10b981;
+    }
+
+    .untyped {
+      color: #38bdf8;
+    }
+  }
+}
+
+.input-display {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-family: monospace;
+  font-size: 1.8rem;
+  color: #10b981;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 10px;
+  border-radius: 4px;
+
+  .cursor {
+    animation: blink 1s infinite;
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.game-over-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1e293b;
+  padding: 40px;
+  border-radius: 8px;
+  text-align: center;
+  border: 2px solid #ef4444;
+
+  h2 {
+    color: #ef4444;
+    margin-top: 0;
+  }
+
+  p {
+    font-size: 1.5rem;
+  }
+}

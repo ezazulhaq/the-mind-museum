@@ -6,23 +6,81 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import Database from 'better-sqlite3';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+// Initialize SQLite Database
+const db = new Database('mind_museum.db');
+db.pragma('journal_mode = WAL');
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS players (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+  CREATE TABLE IF NOT EXISTS sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER,
+    game_id TEXT NOT NULL,
+    duration_ms INTEGER NOT NULL,
+    FOREIGN KEY(player_id) REFERENCES players(id)
+  );
+  CREATE TABLE IF NOT EXISTS telemetry (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER,
+    metric_type TEXT NOT NULL,
+    value NUMERIC NOT NULL,
+    payload TEXT,
+    FOREIGN KEY(session_id) REFERENCES sessions(id)
+  );
+  CREATE TABLE IF NOT EXISTS logic_errors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER,
+    gate_type TEXT NOT NULL,
+    failed_state TEXT NOT NULL,
+    FOREIGN KEY(session_id) REFERENCES sessions(id)
+  );
+`);
+
+app.use(express.json());
+
+app.post('/api/telemetry', (req, res) => {
+  const { session_id, metric_type, value, payload } = req.body;
+  try {
+    const stmt = db.prepare('INSERT INTO telemetry (session_id, metric_type, value, payload) VALUES (?, ?, ?, ?)');
+    const info = stmt.run(session_id, metric_type, value, JSON.stringify(payload || {}));
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/sessions', (req, res) => {
+  const { player_id, game_id, duration_ms } = req.body;
+  try {
+    const stmt = db.prepare('INSERT INTO sessions (player_id, game_id, duration_ms) VALUES (?, ?, ?)');
+    const info = stmt.run(player_id, game_id, duration_ms);
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/players', (req, res) => {
+  const { username } = req.body;
+  try {
+    const stmt = db.prepare('INSERT INTO players (username) VALUES (?)');
+    const info = stmt.run(username);
+    res.json({ success: true, id: info.lastInsertRowid });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 /**
  * Serve static files from /browser

@@ -1,0 +1,26 @@
+<div class="game-container">
+  <div class="header">
+    <h2>Terminal Velocity</h2>
+    <div class="stats">
+      <span>Score: {{ score }}</span>
+    </div>
+  </div>
+
+  <div class="play-area" *ngIf="!gameOver">
+    <div *ngFor="let word of words; trackBy: trackByFn" class="falling-word" [style.left.%]="word.x"
+      [style.top.%]="word.y" [class.matched]="word.text.startsWith(currentInput) && currentInput.length > 0">
+      <span class="typed">{{ getTypedPart(word.text) }}</span><span class="untyped">{{ getUntypedPart(word.text)
+        }}</span>
+    </div>
+
+    <div class="input-display">
+      > {{ currentInput }}<span class="cursor">_</span>
+    </div>
+  </div>
+
+  <div class="game-over-panel" *ngIf="gameOver">
+    <h2>SYSTEM FAILURE</h2>
+    <p>Final Score: {{ score }}</p>
+    <button class="btn btn-primary" (click)="startGame()">Restart System</button>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="profile-container">
+  <h2>Create Your Profile</h2>
+
+  <div class="form-group">
+    <label for="username">Username:</label>
+    <input type="text" id="username" [(ngModel)]="username" placeholder="Enter your museum alias" [disabled]="loading">
+  </div>
+
+  <button (click)="createProfile()" [disabled]="loading || !username.trim()" class="btn btn-primary">
+    {{ loading ? 'Creating...' : 'Start Journey' }}
+  </button>
+</div>
