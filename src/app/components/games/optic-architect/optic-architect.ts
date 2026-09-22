@@ -70,12 +70,12 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(x, y, z);
         group.add(mesh); // Add to group instead of scene
-        
+
         // Add edges for better visibility
         const edges = new THREE.EdgesGeometry(geometry);
         const line = new THREE.LineSegments(edges, edgeMaterial);
         mesh.add(line);
-        
+
         this.cubes.push(mesh);
       };
 
@@ -87,7 +87,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       // Manual Rotation variables
       let isDragging = false;
       let previousMousePosition = { x: 0, y: 0 };
-      
+
       const targetRotation = { x: Math.PI / 4, y: Math.PI / 4 }; // Specific angle to win
       let hasWon = false;
 
@@ -108,7 +108,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
         isDragging = true;
         previousMousePosition = { x: event.clientX, y: event.clientY };
       });
-      
+
       this.renderer.domElement.addEventListener('pointerup', () => {
         isDragging = false;
       });
@@ -119,17 +119,17 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
             x: event.clientX - previousMousePosition.x,
             y: event.clientY - previousMousePosition.y
           };
-          
+
           group.rotation.y += deltaMove.x * 0.01;
           group.rotation.x += deltaMove.y * 0.01;
-          
+
           previousMousePosition = { x: event.clientX, y: event.clientY };
-          
+
           // Check win condition (very rough alignment check)
           // Normalize rotation to 0 - 2PI
           const rotX = Math.abs(group.rotation.x % (Math.PI * 2));
           const rotY = Math.abs(group.rotation.y % (Math.PI * 2));
-          
+
           // If looking straight at the XY plane (z-axis alignment)
           if (rotX < 0.2 && rotY < 0.2) {
             hasWon = true;
@@ -143,9 +143,9 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       // Animation Loop
       const animate = () => {
         this.animationFrameId = requestAnimationFrame(animate);
-        
+
         // No auto-rotation anymore; manual rotation only
-        
+
         this.renderer.render(this.scene, this.camera);
       };
 

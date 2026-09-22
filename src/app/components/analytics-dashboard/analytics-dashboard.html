@@ -3,23 +3,23 @@
   <button class="btn btn-secondary" routerLink="/dashboard">Back to Hub</button>
 
   <div *ngIf="loading" class="loading">Loading metrics...</div>
-  
+
   <div *ngIf="!loading && stats" class="stats-grid">
     <div class="stat-card">
       <h3>Total Players</h3>
       <div class="value">{{ stats.totalPlayers }}</div>
     </div>
-    
+
     <div class="stat-card">
       <h3>Total Sessions</h3>
       <div class="value">{{ stats.totalSessions }}</div>
     </div>
-    
+
     <div class="stat-card">
       <h3>Average WPM</h3>
       <div class="value">{{ stats.avgWpm | number:'1.0-0' }}</div>
     </div>
-    
+
     <div class="stat-card full-width">
       <h3>Sessions by Game</h3>
       <ul>

@@ -28,14 +28,14 @@ h2 {
   border-radius: 8px;
   border: 1px solid #334155;
   text-align: center;
-  
+
   h3 {
     margin: 0 0 10px 0;
     color: #94a3b8;
     font-size: 14px;
     text-transform: uppercase;
   }
-  
+
   .value {
     font-size: 36px;
     font-weight: bold;
@@ -46,27 +46,27 @@ h2 {
 .stat-card.full-width {
   grid-column: 1 / -1;
   text-align: left;
-  
+
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    
+
     li {
       display: flex;
       justify-content: space-between;
       padding: 10px 0;
       border-bottom: 1px solid #1e293b;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .game-id {
         color: #38bdf8;
         font-weight: bold;
       }
-      
+
       .count {
         color: #94a3b8;
       }

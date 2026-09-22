@@ -12,7 +12,7 @@ import { RouterLink } from '@angular/router';
 })
 export class AnalyticsDashboard implements OnInit {
   private http = inject(HttpClient);
-  
+
   stats: any = null;
   loading = true;
 
