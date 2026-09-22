@@ -1,0 +1,34 @@
+<div class="analytics-container">
+  <h2>The Progress Wing (Analytics)</h2>
+  <button class="btn btn-secondary" routerLink="/dashboard">Back to Hub</button>
+
+  <div *ngIf="loading" class="loading">Loading metrics...</div>
+  
+  <div *ngIf="!loading && stats" class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Players</h3>
+      <div class="value">{{ stats.totalPlayers }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Total Sessions</h3>
+      <div class="value">{{ stats.totalSessions }}</div>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Average WPM</h3>
+      <div class="value">{{ stats.avgWpm | number:'1.0-0' }}</div>
+    </div>
+    
+    <div class="stat-card full-width">
+      <h3>Sessions by Game</h3>
+      <ul>
+        <li *ngFor="let game of stats.sessionCountByGame">
+          <span class="game-id">{{ game.game_id }}</span>
+          <span class="count">{{ game.count }} sessions</span>
+        </li>
+        <li *ngIf="stats.sessionCountByGame.length === 0">No sessions recorded yet.</li>
+      </ul>
+    </div>
+  </div>
+</div>

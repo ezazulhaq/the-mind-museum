@@ -11,19 +11,19 @@ import { RouterLink } from '@angular/router';
 })
 export class OpticArchitect implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
-  
+
   private platformId = inject(PLATFORM_ID);
-  
+
   private scene: any;
   private camera: any;
   private renderer: any;
   private animationFrameId: number | null = null;
   private cubes: any[] = [];
-  
+
   async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       const THREE = await import('three');
-      
+
       const width = 800;
       const height = 600;
 
@@ -35,7 +35,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       const aspect = width / height;
       const d = 10;
       this.camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
-      
+
       // Isometric positioning
       this.camera.position.set(20, 20, 20); // Looking from a diagonal
       this.camera.lookAt(this.scene.position); // Look at center
@@ -48,7 +48,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
       this.scene.add(ambientLight);
-      
+
       const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
       directionalLight.position.set(20, 40, -15);
       this.scene.add(directionalLight);
@@ -62,10 +62,14 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       const material = new THREE.MeshLambertMaterial({ color: 0x38bdf8 });
       const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
 
+      // Add a group to hold our puzzle blocks
+      const group = new THREE.Group();
+      this.scene.add(group);
+
       const addCube = (x: number, y: number, z: number) => {
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(x, y, z);
-        this.scene.add(mesh);
+        group.add(mesh); // Add to group instead of scene
         
         // Add edges for better visibility
         const edges = new THREE.EdgesGeometry(geometry);
@@ -75,29 +79,63 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
         this.cubes.push(mesh);
       };
 
-      addCube(0, 1, 0);
-      addCube(2, 1, 0);
-      addCube(0, 3, 0);
+      addCube(0, 0, 0);
+      addCube(2, 0, 0);
+      addCube(0, 2, 0);
+      addCube(0, 0, 2);
 
-      // Raycaster for interactivity
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
+      // Manual Rotation variables
+      let isDragging = false;
+      let previousMousePosition = { x: 0, y: 0 };
+      
+      const targetRotation = { x: Math.PI / 4, y: Math.PI / 4 }; // Specific angle to win
+      let hasWon = false;
+
+      // HTML overlay text for UI
+      const uiDiv = document.createElement('div');
+      uiDiv.style.position = 'absolute';
+      uiDiv.style.top = '20px';
+      uiDiv.style.left = '20px';
+      uiDiv.style.color = 'white';
+      uiDiv.style.fontFamily = 'monospace';
+      uiDiv.style.fontSize = '18px';
+      uiDiv.style.pointerEvents = 'none';
+      uiDiv.innerHTML = 'Drag to rotate the shape.<br>Align it to see a perfect "L".';
+      this.container.nativeElement.style.position = 'relative';
+      this.container.nativeElement.appendChild(uiDiv);
 
       this.renderer.domElement.addEventListener('pointerdown', (event: any) => {
-        const rect = this.renderer.domElement.getBoundingClientRect();
-        mouse.x = ((event.clientX - rect.left) / width) * 2 - 1;
-        mouse.y = -((event.clientY - rect.top) / height) * 2 + 1;
+        isDragging = true;
+        previousMousePosition = { x: event.clientX, y: event.clientY };
+      });
+      
+      this.renderer.domElement.addEventListener('pointerup', () => {
+        isDragging = false;
+      });
 
-        raycaster.setFromCamera(mouse, this.camera);
-        const intersects = raycaster.intersectObjects(this.cubes, false);
-
-        if (intersects.length > 0) {
-          const object = intersects[0].object as any;
-          // Toggle color on click
-          if (object.material.color.getHex() === 0x38bdf8) {
-            object.material.color.setHex(0x10b981); // Green
-          } else {
-            object.material.color.setHex(0x38bdf8); // Blue
+      this.renderer.domElement.addEventListener('pointermove', (event: any) => {
+        if (isDragging && !hasWon) {
+          const deltaMove = {
+            x: event.clientX - previousMousePosition.x,
+            y: event.clientY - previousMousePosition.y
+          };
+          
+          group.rotation.y += deltaMove.x * 0.01;
+          group.rotation.x += deltaMove.y * 0.01;
+          
+          previousMousePosition = { x: event.clientX, y: event.clientY };
+          
+          // Check win condition (very rough alignment check)
+          // Normalize rotation to 0 - 2PI
+          const rotX = Math.abs(group.rotation.x % (Math.PI * 2));
+          const rotY = Math.abs(group.rotation.y % (Math.PI * 2));
+          
+          // If looking straight at the XY plane (z-axis alignment)
+          if (rotX < 0.2 && rotY < 0.2) {
+            hasWon = true;
+            uiDiv.innerHTML = '<span style="color: #10b981; font-size: 24px; font-weight: bold">Alignment Complete!</span><br>Perspective matched.';
+            group.rotation.x = 0;
+            group.rotation.y = 0;
           }
         }
       });
@@ -106,8 +144,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       const animate = () => {
         this.animationFrameId = requestAnimationFrame(animate);
         
-        // Slowly rotate the entire scene so player can see structure from different angles
-        this.scene.rotation.y += 0.005;
+        // No auto-rotation anymore; manual rotation only
         
         this.renderer.render(this.scene, this.camera);
       };
@@ -120,11 +157,11 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
     if (this.animationFrameId !== null && isPlatformBrowser(this.platformId)) {
       cancelAnimationFrame(this.animationFrameId);
     }
-    
+
     if (this.renderer) {
       this.renderer.dispose();
     }
-    
+
     // Clean up ThreeJS scene
     this.cubes.forEach(cube => {
       cube.geometry.dispose();

@@ -82,6 +82,27 @@ app.post('/api/players', (req, res) => {
   }
 });
 
+app.get('/api/analytics', (req, res) => {
+  try {
+    const totalSessions = db.prepare('SELECT COUNT(*) as count FROM sessions').get() as { count: number };
+    const totalPlayers = db.prepare('SELECT COUNT(*) as count FROM players').get() as { count: number };
+    const avgWpm = db.prepare('SELECT AVG(value) as avg FROM telemetry WHERE metric_type = ?').get('WPM') as { avg: number };
+    const sessionCountByGame = db.prepare('SELECT game_id, COUNT(*) as count FROM sessions GROUP BY game_id').all();
+    
+    res.json({ 
+      success: true, 
+      stats: {
+        totalSessions: totalSessions.count,
+        totalPlayers: totalPlayers.count,
+        avgWpm: avgWpm.avg || 0,
+        sessionCountByGame
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 /**
  * Serve static files from /browser
  */
