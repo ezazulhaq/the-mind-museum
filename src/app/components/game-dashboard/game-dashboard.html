@@ -6,9 +6,9 @@
       <div class="wing-badge">{{ game.wing }}</div>
       <h3>{{ game.title }}</h3>
       <p>{{ game.description }}</p>
-      <button class="btn btn-primary" [disabled]="game.id !== 'g1'"
-        [routerLink]="game.id === 'g1' ? ['/games/terminal-velocity'] : null">
-        {{ game.id === 'g1' ? 'Play' : 'Coming Soon' }}
+      <button class="btn btn-primary" [disabled]="game.id !== 'g1' && game.id !== 'g5'"
+        [routerLink]="game.id === 'g1' ? ['/games/terminal-velocity'] : (game.id === 'g5' ? ['/games/algorithmic-alchemist'] : null)">
+        {{ (game.id === 'g1' || game.id === 'g5') ? 'Play' : 'Coming Soon' }}
       </button>
     </div>
   </div>

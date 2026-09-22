@@ -1,0 +1,49 @@
+<div class="game-container">
+  <div class="header">
+    <h2>Algorithmic Alchemist</h2>
+    <div class="actions">
+      <button class="btn btn-secondary" (click)="resetLevel()" [disabled]="isRunning">Reset</button>
+      <button class="btn btn-primary" (click)="runProgram()" [disabled]="isRunning">Run Sequence</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="sidebar">
+      <h3>Toolbox</h3>
+      <div id="toolbox" cdkDropList [cdkDropListData]="availableCommands" [cdkDropListConnectedTo]="['program-area']"
+        class="command-list toolbox">
+        <div class="command-card" *ngFor="let item of availableCommands" cdkDrag>
+          {{ item.label }}
+          <div *cdkDragPreview class="command-card">{{ item.label }}</div>
+        </div>
+      </div>
+
+      <div id="trash" cdkDropList [cdkDropListData]="trash" class="trash-area" (cdkDropListDropped)="trashDrop($event)">
+        <p>Drop here to delete</p>
+      </div>
+    </div>
+
+    <div class="workspace">
+      <h3>Sequence</h3>
+      <div id="program-area" cdkDropList [cdkDropListData]="program" [cdkDropListConnectedTo]="['trash']"
+        class="command-list sequence" (cdkDropListDropped)="drop($event)">
+        <div class="command-card" *ngFor="let item of program" cdkDrag>
+          {{ item.label }}
+        </div>
+        <div *ngIf="program.length === 0" class="empty-state">
+          Drag commands here to build your sequence.
+        </div>
+      </div>
+    </div>
+
+    <div class="execution">
+      <h3>Simulation</h3>
+      <canvas #gameCanvas width="250" height="250"></canvas>
+
+      <div class="success-message" *ngIf="isSuccess">
+        <h3>Success!</h3>
+        <p>You reached the target.</p>
+      </div>
+    </div>
+  </div>
+</div>
