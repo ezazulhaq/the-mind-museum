@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 import { PlayerStateService } from '../../../services/player-state.service';
 
 interface Word {
@@ -14,8 +15,9 @@ interface Word {
 @Component({
   selector: 'app-terminal-velocity',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './terminal-velocity.html',
+
   styleUrl: './terminal-velocity.css'
 })
 export class TerminalVelocity implements OnInit, OnDestroy {

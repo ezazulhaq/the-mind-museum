@@ -1,5 +1,6 @@
 import { Component, OnInit, PLATFORM_ID, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { DragDropModule, CdkDragDrop, moveItemInArray, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
 
 interface Command {
@@ -11,7 +12,7 @@ interface Command {
 @Component({
   selector: 'app-algorithmic-alchemist',
   standalone: true,
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule, DragDropModule, RouterModule],
   templateUrl: './algorithmic-alchemist.html',
   styleUrl: './algorithmic-alchemist.css'
 })
