@@ -7,6 +7,7 @@ import { AlgorithmicAlchemist } from './components/games/algorithmic-alchemist/a
 import { NodeNetwork } from './components/games/node-network/node-network';
 import { LogicGateDefender } from './components/games/logic-gate-defender/logic-gate-defender';
 import { ContraptionCrafter } from './components/games/contraption-crafter/contraption-crafter';
+import { OpticArchitect } from './components/games/optic-architect/optic-architect';
 
 export const routes: Routes = [
   { path: '', component: Lobby },
@@ -17,4 +18,5 @@ export const routes: Routes = [
   { path: 'games/logic-gate-defender', component: LogicGateDefender },
   { path: 'games/contraption-crafter', component: ContraptionCrafter },
   { path: 'games/algorithmic-alchemist', component: AlgorithmicAlchemist },
+  { path: 'games/optic-architect', component: OpticArchitect },
 ];

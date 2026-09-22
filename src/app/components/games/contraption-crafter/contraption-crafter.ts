@@ -11,14 +11,14 @@ import { RouterLink } from '@angular/router';
 })
 export class ContraptionCrafter implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
-  
+
   private platformId = inject(PLATFORM_ID);
   private game: any;
 
   async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
       const Phaser = await import('phaser');
-      
+
       this.game = new Phaser.Game({
         parent: this.container.nativeElement,
         type: Phaser.AUTO,
@@ -33,9 +33,9 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           }
         },
         scene: {
-          create: function(this: any) {
+          create: function (this: any) {
             const centerX = this.cameras.main.width / 2;
-            
+
             this.add.text(centerX, 50, 'Contraption Crafter', {
               fontFamily: 'monospace',
               fontSize: '32px',
@@ -50,7 +50,7 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
 
             // Ground
             this.matter.add.rectangle(centerX, 580, 800, 40, { isStatic: true });
-            
+
             // Bucket
             this.matter.add.rectangle(600, 500, 20, 100, { isStatic: true });
             this.matter.add.rectangle(700, 500, 20, 100, { isStatic: true });
@@ -58,13 +58,24 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
 
             // Ball
             const ball = this.matter.add.circle(100, 200, 20, { restitution: 0.9, density: 0.05 });
-            
+
             // A draggable ramp
             const ramp = this.matter.add.rectangle(300, 400, 200, 20, { isStatic: true, angle: Math.PI / 8 });
-            
+
+            // Allow dragging physics bodies
+            this.matter.add.mouseSpring();
+
             this.input.on('pointerdown', (pointer: any) => {
-              // Simple spawn new blocks on click for contraptions
-              this.matter.add.rectangle(pointer.x, pointer.y, 40, 40, { restitution: 0.5 });
+              // Only spawn if we didn't click on a body
+              const bodies = this.matter.world.engine.world.bodies;
+              const hit = this.matter.query.point(bodies, pointer);
+              if (hit.length === 0) {
+                // Spawn a new block
+                const newBlock = this.matter.add.rectangle(pointer.x, pointer.y, 40, 40, { restitution: 0.5 });
+
+                // Add a visual sprite/graphic so we can see it even without debug mode
+                // Note: since we're using debug mode for now, we'll just let debug draw it
+              }
             });
           }
         }
