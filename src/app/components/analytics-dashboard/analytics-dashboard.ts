@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ViewChild, ElementRef, PLATFORM_ID, signal, effect } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { OfflineDbService } from '../../services/offline-db.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
 export class AnalyticsDashboard implements OnInit {
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
 
-  private http = inject(HttpClient);
+  private offlineDb = inject(OfflineDbService);
   private platformId = inject(PLATFORM_ID);
 
   stats = signal<any>(null);
@@ -39,18 +39,16 @@ export class AnalyticsDashboard implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.http.get('/api/analytics').subscribe({
-        next: (res: any) => {
-          this.stats.set(res.stats);
-          this.loading.set(false);
-        },
-        error: (err) => {
-          console.error('Failed to load analytics', err);
-          this.loading.set(false);
-        }
-      });
+      try {
+        const stats = await this.offlineDb.getAnalytics();
+        this.stats.set(stats);
+      } catch (err) {
+        console.error('Failed to load analytics', err);
+      } finally {
+        this.loading.set(false);
+      }
     }
   }
 

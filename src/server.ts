@@ -19,126 +19,57 @@ db.pragma('journal_mode = WAL');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS players (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     username TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    synced INTEGER DEFAULT 1
   );
   CREATE TABLE IF NOT EXISTS sessions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    player_id INTEGER,
+    id TEXT PRIMARY KEY,
+    player_id TEXT,
     game_id TEXT NOT NULL,
     duration_ms INTEGER NOT NULL,
+    synced INTEGER DEFAULT 1,
     FOREIGN KEY(player_id) REFERENCES players(id)
   );
   CREATE TABLE IF NOT EXISTS telemetry (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id INTEGER,
+    id TEXT PRIMARY KEY,
+    session_id TEXT,
     metric_type TEXT NOT NULL,
     value NUMERIC NOT NULL,
     payload TEXT,
+    synced INTEGER DEFAULT 1,
     FOREIGN KEY(session_id) REFERENCES sessions(id)
   );
   CREATE TABLE IF NOT EXISTS logic_errors (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id INTEGER,
+    id TEXT PRIMARY KEY,
+    session_id TEXT,
     gate_type TEXT NOT NULL,
     failed_state TEXT NOT NULL,
+    synced INTEGER DEFAULT 1,
     FOREIGN KEY(session_id) REFERENCES sessions(id)
   );
 `);
 
 app.use(express.json());
 
-app.post('/api/telemetry', (req, res) => {
-  const { session_id, metric_type, value, payload } = req.body;
+app.post('/api/sync', (req, res) => {
+  const { players, sessions, telemetry, logic_errors } = req.body;
+  
   try {
-    const stmt = db.prepare('INSERT INTO telemetry (session_id, metric_type, value, payload) VALUES (?, ?, ?, ?)');
-    const info = stmt.run(session_id, metric_type, value, JSON.stringify(payload || {}));
-    res.json({ success: true, id: info.lastInsertRowid });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/api/sessions', (req, res) => {
-  const { player_id, game_id, duration_ms } = req.body;
-  try {
-    const stmt = db.prepare('INSERT INTO sessions (player_id, game_id, duration_ms) VALUES (?, ?, ?)');
-    const info = stmt.run(player_id, game_id, duration_ms);
-    res.json({ success: true, id: info.lastInsertRowid });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/api/players', (req, res) => {
-  const { username } = req.body;
-  try {
-    const stmt = db.prepare('INSERT INTO players (username) VALUES (?)');
-    const info = stmt.run(username);
-    res.json({ success: true, id: info.lastInsertRowid });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/analytics', (req, res) => {
-  try {
-    const totalSessions = db.prepare('SELECT COUNT(*) as count FROM sessions').get() as { count: number };
-    const totalPlayers = db.prepare('SELECT COUNT(*) as count FROM players').get() as { count: number };
-    const avgWpm = db.prepare('SELECT AVG(value) as avg FROM telemetry WHERE metric_type = ?').get('WPM') as { avg: number };
-    const avgAccuracy = db.prepare('SELECT AVG(value) as avg FROM telemetry WHERE metric_type = ?').get('ACCURACY') as { avg: number };
-    const sessionCountByGame = db.prepare('SELECT game_id, COUNT(*) as count, AVG(duration_ms) as avg_duration FROM sessions GROUP BY game_id').all();
-    const recentTelemetry = db.prepare('SELECT t.metric_type, t.value, s.game_id FROM telemetry t JOIN sessions s ON t.session_id = s.id ORDER BY t.id DESC LIMIT 20').all();
-    const logicErrorsByGate = db.prepare('SELECT gate_type, COUNT(*) as count FROM logic_errors GROUP BY gate_type').all();
-
-    res.json({
-      success: true,
-      stats: {
-        totalSessions: totalSessions.count,
-        totalPlayers: totalPlayers.count,
-        avgWpm: avgWpm.avg || 0,
-        avgAccuracy: avgAccuracy.avg || 0,
-        sessionCountByGame,
-        recentTelemetry,
-        logicErrorsByGate
-      }
-    });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/players', (req, res) => {
-  try {
-    const players = db.prepare('SELECT * FROM players ORDER BY created_at DESC').all();
-    res.json({ success: true, players });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/sessions', (req, res) => {
-  try {
-    const playerId = req.query['player_id'];
-    let sessions;
-    if (playerId) {
-      sessions = db.prepare('SELECT * FROM sessions WHERE player_id = ? ORDER BY id DESC').all(playerId);
-    } else {
-      sessions = db.prepare('SELECT * FROM sessions ORDER BY id DESC LIMIT 50').all();
-    }
-    res.json({ success: true, sessions });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/api/logic-errors', (req, res) => {
-  const { session_id, gate_type, failed_state } = req.body;
-  try {
-    const stmt = db.prepare('INSERT INTO logic_errors (session_id, gate_type, failed_state) VALUES (?, ?, ?)');
-    const info = stmt.run(session_id, gate_type, failed_state);
-    res.json({ success: true, id: info.lastInsertRowid });
+    const insertPlayer = db.prepare('INSERT OR REPLACE INTO players (id, username, created_at, synced) VALUES (?, ?, ?, 1)');
+    const insertSession = db.prepare('INSERT OR REPLACE INTO sessions (id, player_id, game_id, duration_ms, synced) VALUES (?, ?, ?, ?, 1)');
+    const insertTelemetry = db.prepare('INSERT OR REPLACE INTO telemetry (id, session_id, metric_type, value, payload, synced) VALUES (?, ?, ?, ?, ?, 1)');
+    const insertLogicError = db.prepare('INSERT OR REPLACE INTO logic_errors (id, session_id, gate_type, failed_state, synced) VALUES (?, ?, ?, ?, 1)');
+    
+    db.transaction(() => {
+      for (const p of players || []) insertPlayer.run(p.id, p.username, p.created_at);
+      for (const s of sessions || []) insertSession.run(s.id, s.player_id, s.game_id, s.duration_ms);
+      for (const t of telemetry || []) insertTelemetry.run(t.id, t.session_id, t.metric_type, t.value, JSON.stringify(t.payload));
+      for (const l of logic_errors || []) insertLogicError.run(l.id, l.session_id, l.gate_type, l.failed_state);
+    })();
+    
+    res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

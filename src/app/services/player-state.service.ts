@@ -1,17 +1,16 @@
 import { Injectable, PLATFORM_ID, inject, signal, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { OfflineDbService } from './offline-db.service';
 
 export interface Player {
-  id: number;
+  id: string;
   name: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class PlayerStateService {
   private platformId = inject(PLATFORM_ID);
-  private http = inject(HttpClient);
+  private offlineDb = inject(OfflineDbService);
 
   // Modern Signal-based state
   readonly player = signal<Player | null>(this.loadInitialPlayer());
@@ -22,7 +21,7 @@ export class PlayerStateService {
       const p = this.player();
       if (isPlatformBrowser(this.platformId)) {
         if (p) {
-          localStorage.setItem('mind_museum_player_id', p.id.toString());
+          localStorage.setItem('mind_museum_player_id', p.id);
           localStorage.setItem('mind_museum_player_name', p.name);
         } else {
           localStorage.removeItem('mind_museum_player_id');
@@ -37,12 +36,12 @@ export class PlayerStateService {
     const id = localStorage.getItem('mind_museum_player_id');
     const name = localStorage.getItem('mind_museum_player_name');
     if (id && name) {
-      return { id: parseInt(id, 10), name };
+      return { id, name };
     }
     return null;
   }
 
-  get playerId(): number | null {
+  get playerId(): string | null {
     return this.player()?.id || null;
   }
 
@@ -50,48 +49,28 @@ export class PlayerStateService {
     return this.player()?.name || null;
   }
 
-  setPlayer(id: number, name: string) {
+  async setPlayer(name: string) {
+    const id = await this.offlineDb.addPlayer(name);
     this.player.set({ id, name });
   }
 
   /** Creates a new session for a game and returns the session ID */
-  async createSession(gameId: string, durationMs: number = 0): Promise<number> {
-    try {
-      const res = await firstValueFrom(
-        this.http.post<{ success: boolean; id: number }>('/api/sessions', {
-          player_id: this.playerId || 1,
-          game_id: gameId,
-          duration_ms: durationMs
-        })
-      );
-      return Number(res.id);
-    } catch (err) {
-      console.error('Failed to create session', err);
-      return 1;
-    }
+  async createSession(gameId: string, durationMs: number = 0): Promise<string> {
+    const pId = this.playerId;
+    if (!pId) return '';
+    return await this.offlineDb.createSession(pId, gameId, durationMs);
   }
 
   /** Logs telemetry for a session */
-  logTelemetry(sessionId: number, metricType: string, value: number, payload: any = {}) {
-    this.http.post('/api/telemetry', {
-      session_id: sessionId,
-      metric_type: metricType,
-      value,
-      payload
-    }).subscribe({
-      error: (err) => console.error('Failed to log telemetry', err)
-    });
+  logTelemetry(sessionId: string, metricType: string, value: number, payload: any = {}) {
+    if (!sessionId) return;
+    this.offlineDb.logTelemetry(sessionId, metricType, value, payload);
   }
 
   /** Logs a logic error for a session */
-  logLogicError(sessionId: number, gateType: string, failedState: string) {
-    this.http.post('/api/logic-errors', {
-      session_id: sessionId,
-      gate_type: gateType,
-      failed_state: failedState
-    }).subscribe({
-      error: (err) => console.error('Failed to log logic error', err)
-    });
+  logLogicError(sessionId: string, gateType: string, failedState: string) {
+    if (!sessionId) return;
+    this.offlineDb.logLogicError(sessionId, gateType, failedState);
   }
 }
 

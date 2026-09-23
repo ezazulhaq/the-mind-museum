@@ -28,12 +28,7 @@ export class ProfileSelector {
     this.loading.set(true);
 
     try {
-      const res = await firstValueFrom(
-        this.http.post<{ success: boolean; id: number }>('/api/players', {
-          username: name,
-        }),
-      );
-      this.playerState.setPlayer(res.id, name);
+      await this.playerState.setPlayer(name);
       await this.router.navigate(['/dashboard']);
     } catch (err) {
       console.error('Error creating profile', err);
@@ -41,3 +36,4 @@ export class ProfileSelector {
     }
   }
 }
+
