@@ -1,6 +1,6 @@
 {
-  "name": "mind-museum",
-  "short_name": "mind-museum",
+  "name": "The Mind Museum",
+  "short_name": "MM",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
