@@ -1,3 +1,8 @@
+---
+name: checkpoint
+description: Executable command migrated from checkpoint.md. Use this skill to run the checkpoint workflow.
+---
+
 # Checkpoint Command
 
 Create or verify a checkpoint in your workflow.

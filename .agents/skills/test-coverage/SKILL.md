@@ -1,3 +1,8 @@
+---
+name: test-coverage
+description: Executable command migrated from test-coverage.md. Use this skill to run the test-coverage workflow.
+---
+
 # Test Coverage
 
 Analyze test coverage and generate missing tests:

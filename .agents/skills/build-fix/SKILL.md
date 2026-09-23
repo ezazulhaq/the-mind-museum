@@ -1,3 +1,8 @@
+---
+name: build-fix
+description: Executable command migrated from build-fix.md. Use this skill to run the build-fix workflow.
+---
+
 # Build and Fix
 
 Incrementally fix TypeScript and build errors:

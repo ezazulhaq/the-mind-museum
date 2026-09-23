@@ -1,3 +1,8 @@
+---
+name: update-codemaps
+description: Executable command migrated from update-codemaps.md. Use this skill to run the update-codemaps workflow.
+---
+
 # Update Codemaps
 
 Analyze the codebase structure and update architecture documentation:

@@ -1,3 +1,8 @@
+---
+name: learn
+description: Executable command migrated from learn.md. Use this skill to run the learn workflow.
+---
+
 # /learn - Extract Reusable Patterns
 
 Analyze the current session and extract any patterns worth saving as skills.

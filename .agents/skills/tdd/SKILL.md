@@ -1,4 +1,9 @@
 ---
+name: tdd
+description: Executable command migrated from tdd.md. Use this skill to run the tdd workflow.
+---
+
+---
 description: Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage.
 ---
 

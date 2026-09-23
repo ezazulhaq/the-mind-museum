@@ -1,3 +1,8 @@
+---
+name: verify
+description: Executable command migrated from verify.md. Use this skill to run the verify workflow.
+---
+
 # Verification Command
 
 Run comprehensive verification on current codebase state.

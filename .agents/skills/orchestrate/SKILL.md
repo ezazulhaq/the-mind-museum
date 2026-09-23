@@ -1,3 +1,8 @@
+---
+name: orchestrate
+description: Executable command migrated from orchestrate.md. Use this skill to run the orchestrate workflow.
+---
+
 # Orchestrate Command
 
 Sequential agent workflow for complex tasks.

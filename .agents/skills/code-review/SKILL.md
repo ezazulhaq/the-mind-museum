@@ -1,3 +1,8 @@
+---
+name: code-review
+description: Executable command migrated from code-review.md. Use this skill to run the code-review workflow.
+---
+
 # Code Review
 
 Comprehensive security and quality review of uncommitted changes:

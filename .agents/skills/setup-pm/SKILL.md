@@ -1,4 +1,9 @@
 ---
+name: setup-pm
+description: Executable command migrated from setup-pm.md. Use this skill to run the setup-pm workflow.
+---
+
+---
 description: Configure your preferred package manager (npm/pnpm/yarn/bun)
 disable-model-invocation: true
 ---

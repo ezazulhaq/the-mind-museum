@@ -1,3 +1,8 @@
+---
+name: update-docs
+description: Executable command migrated from update-docs.md. Use this skill to run the update-docs workflow.
+---
+
 # Update Documentation
 
 Sync documentation from source-of-truth:

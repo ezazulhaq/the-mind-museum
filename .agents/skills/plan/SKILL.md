@@ -1,4 +1,9 @@
 ---
+name: plan
+description: Executable command migrated from plan.md. Use this skill to run the plan workflow.
+---
+
+---
 description: Restate requirements, assess risks, and create step-by-step implementation plan. WAIT for user CONFIRM before touching any code.
 ---
 

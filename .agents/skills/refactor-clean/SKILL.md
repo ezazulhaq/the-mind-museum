@@ -1,3 +1,8 @@
+---
+name: refactor-clean
+description: Executable command migrated from refactor-clean.md. Use this skill to run the refactor-clean workflow.
+---
+
 # Refactor Clean
 
 Safely identify and remove dead code with test verification:

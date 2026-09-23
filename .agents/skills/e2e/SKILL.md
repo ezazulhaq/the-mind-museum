@@ -1,4 +1,9 @@
 ---
+name: e2e
+description: Executable command migrated from e2e.md. Use this skill to run the e2e workflow.
+---
+
+---
 description: Generate and run end-to-end tests with Playwright. Creates test journeys, runs tests, captures screenshots/videos/traces, and uploads artifacts.
 ---
 

@@ -1,3 +1,8 @@
+---
+name: eval
+description: Executable command migrated from eval.md. Use this skill to run the eval workflow.
+---
+
 # Eval Command
 
 Manage eval-driven development workflow.
