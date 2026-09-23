@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, ElementRef, AfterViewInit, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, AfterViewInit, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -15,6 +15,7 @@ export class AnalyticsDashboard implements OnInit {
 
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
   stats: any = null;
   loading = true;
@@ -30,18 +31,22 @@ export class AnalyticsDashboard implements OnInit {
   };
 
   ngOnInit() {
-    this.http.get('/api/analytics').subscribe({
-      next: (res: any) => {
-        this.stats = res.stats;
-        this.loading = false;
-        // Draw chart after view renders
-        setTimeout(() => this.drawChart(), 100);
-      },
-      error: (err) => {
-        console.error('Failed to load analytics', err);
-        this.loading = false;
-      }
-    });
+    if (isPlatformBrowser(this.platformId)) {
+      this.http.get('/api/analytics').subscribe({
+        next: (res: any) => {
+          this.stats = res.stats;
+          this.loading = false;
+          this.cdr.markForCheck();
+          // Draw chart after view renders
+          setTimeout(() => this.drawChart(), 100);
+        },
+        error: (err) => {
+          console.error('Failed to load analytics', err);
+          this.loading = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }
   }
 
   getDomain(gameId: string): string {
