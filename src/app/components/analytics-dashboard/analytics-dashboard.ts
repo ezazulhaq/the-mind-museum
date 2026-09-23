@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild, ElementRef, AfterViewInit, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, PLATFORM_ID, signal, effect } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
@@ -15,10 +15,9 @@ export class AnalyticsDashboard implements OnInit {
 
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  private cdr = inject(ChangeDetectorRef);
 
-  stats: any = null;
-  loading = true;
+  stats = signal<any>(null);
+  loading = signal<boolean>(true);
 
   // Cognitive domain mapping
   domainMap: Record<string, string> = {
@@ -30,20 +29,26 @@ export class AnalyticsDashboard implements OnInit {
     'optic-architect': 'Spatial / Rotation'
   };
 
+  constructor() {
+    // Automatically draw the chart when stats are populated
+    effect(() => {
+      const data = this.stats();
+      if (data && !this.loading()) {
+        setTimeout(() => this.drawChart(), 100);
+      }
+    });
+  }
+
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
       this.http.get('/api/analytics').subscribe({
         next: (res: any) => {
-          this.stats = res.stats;
-          this.loading = false;
-          this.cdr.markForCheck();
-          // Draw chart after view renders
-          setTimeout(() => this.drawChart(), 100);
+          this.stats.set(res.stats);
+          this.loading.set(false);
         },
         error: (err) => {
           console.error('Failed to load analytics', err);
-          this.loading = false;
-          this.cdr.markForCheck();
+          this.loading.set(false);
         }
       });
     }
@@ -55,13 +60,13 @@ export class AnalyticsDashboard implements OnInit {
 
   drawChart() {
     if (!this.chartCanvas || !isPlatformBrowser(this.platformId)) return;
-    if (!this.stats?.sessionCountByGame?.length) return;
+    if (!this.stats()?.sessionCountByGame?.length) return;
 
     const canvas = this.chartCanvas.nativeElement;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const data = this.stats.sessionCountByGame;
+    const data = this.stats().sessionCountByGame;
     const barWidth = 60;
     const gap = 30;
     const chartHeight = 180;

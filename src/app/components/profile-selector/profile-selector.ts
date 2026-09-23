@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PlayerStateService } from '../../services/player-state.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile-selector',
@@ -13,28 +14,30 @@ import { PlayerStateService } from '../../services/player-state.service';
   styleUrl: './profile-selector.css'
 })
 export class ProfileSelector {
-  username: string = '';
-  loading = false;
+  username = signal<string>('');
+  loading = signal<boolean>(false);
 
   private http = inject(HttpClient);
   private router = inject(Router);
   private playerState = inject(PlayerStateService);
 
-  createProfile() {
-    if (!this.username.trim()) return;
-    this.loading = true;
+  async createProfile() {
+    const name = this.username().trim();
+    if (!name) return;
+    
+    this.loading.set(true);
 
-    this.http.post<{ success: boolean, id: number }>('/api/players', {
-      username: this.username
-    }).subscribe({
-      next: (res) => {
-        this.playerState.setPlayer(res.id, this.username);
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        console.error('Error creating profile', err);
-        this.loading = false;
-      }
-    });
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ success: boolean, id: number }>('/api/players', {
+          username: name
+        })
+      );
+      this.playerState.setPlayer(res.id, name);
+      await this.router.navigate(['/dashboard']);
+    } catch (err) {
+      console.error('Error creating profile', err);
+      this.loading.set(false);
+    }
   }
 }

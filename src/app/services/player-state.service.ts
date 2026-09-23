@@ -1,42 +1,74 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal, effect } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+
+export interface Player {
+  id: number;
+  name: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class PlayerStateService {
   private platformId = inject(PLATFORM_ID);
   private http = inject(HttpClient);
 
-  get playerId(): number | null {
+  // Modern Signal-based state
+  readonly player = signal<Player | null>(this.loadInitialPlayer());
+
+  constructor() {
+    // Automatically sync state changes to localStorage
+    effect(() => {
+      const p = this.player();
+      if (isPlatformBrowser(this.platformId)) {
+        if (p) {
+          localStorage.setItem('mind_museum_player_id', p.id.toString());
+          localStorage.setItem('mind_museum_player_name', p.name);
+        } else {
+          localStorage.removeItem('mind_museum_player_id');
+          localStorage.removeItem('mind_museum_player_name');
+        }
+      }
+    });
+  }
+
+  private loadInitialPlayer(): Player | null {
     if (!isPlatformBrowser(this.platformId)) return null;
     const id = localStorage.getItem('mind_museum_player_id');
-    return id ? parseInt(id, 10) : null;
+    const name = localStorage.getItem('mind_museum_player_name');
+    if (id && name) {
+      return { id: parseInt(id, 10), name };
+    }
+    return null;
+  }
+
+  get playerId(): number | null {
+    return this.player()?.id || null;
   }
 
   get playerName(): string | null {
-    if (!isPlatformBrowser(this.platformId)) return null;
-    return localStorage.getItem('mind_museum_player_name');
+    return this.player()?.name || null;
   }
 
   setPlayer(id: number, name: string) {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('mind_museum_player_id', id.toString());
-      localStorage.setItem('mind_museum_player_name', name);
-    }
+    this.player.set({ id, name });
   }
 
   /** Creates a new session for a game and returns the session ID */
   async createSession(gameId: string, durationMs: number = 0): Promise<number> {
-    return new Promise((resolve, reject) => {
-      this.http.post<{ success: boolean; id: number }>('/api/sessions', {
-        player_id: this.playerId || 1,
-        game_id: gameId,
-        duration_ms: durationMs
-      }).subscribe({
-        next: (res) => resolve(Number(res.id)),
-        error: (err) => { console.error('Failed to create session', err); resolve(1); }
-      });
-    });
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ success: boolean; id: number }>('/api/sessions', {
+          player_id: this.playerId || 1,
+          game_id: gameId,
+          duration_ms: durationMs
+        })
+      );
+      return Number(res.id);
+    } catch (err) {
+      console.error('Failed to create session', err);
+      return 1;
+    }
   }
 
   /** Logs telemetry for a session */
