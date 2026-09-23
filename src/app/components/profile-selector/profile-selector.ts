@@ -2,16 +2,16 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { PlayerStateService } from '../../services/player-state.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile-selector',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule],
   templateUrl: './profile-selector.html',
-  styleUrl: './profile-selector.css'
+  styleUrl: './profile-selector.css',
 })
 export class ProfileSelector {
   username = signal<string>('');
@@ -24,14 +24,14 @@ export class ProfileSelector {
   async createProfile() {
     const name = this.username().trim();
     if (!name) return;
-    
+
     this.loading.set(true);
 
     try {
       const res = await firstValueFrom(
-        this.http.post<{ success: boolean, id: number }>('/api/players', {
-          username: name
-        })
+        this.http.post<{ success: boolean; id: number }>('/api/players', {
+          username: name,
+        }),
       );
       this.playerState.setPlayer(res.id, name);
       await this.router.navigate(['/dashboard']);

@@ -1,64 +1,171 @@
-<div class="fixed inset-4 md:inset-8 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col z-40">
+<div
+  class="fixed inset-4 md:inset-8 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col z-40"
+>
   <!-- Dynamic Background Glow for Games -->
-  <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse" style="animation-duration: 8s;"></div>
-  <div class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse" style="animation-duration: 12s;"></div>
+  <div
+    class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
+    style="animation-duration: 8s"
+  ></div>
+  <div
+    class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse"
+    style="animation-duration: 12s"
+  ></div>
 
   <!-- Floating Back Button (Top Left) -->
-  <button routerLink="/dashboard" class="absolute top-6 left-6 z-50 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  <button
+    routerLink="/dashboard"
+    class="absolute top-6 left-6 z-50 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.5"
+        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+      />
     </svg>
   </button>
 
   <!-- Floating Actions (Top Right) -->
   <div class="absolute top-6 right-6 z-50 flex gap-4">
-    <button class="bg-slate-700/80 hover:bg-slate-600 text-slate-300 transition-colors font-bold py-2.5 px-6 rounded-xl border border-slate-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" (click)="resetLevel()" [disabled]="isRunning">Reset</button>
-    <button class="bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white transition-all font-bold py-2.5 px-6 rounded-xl shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed" (click)="runProgram()" [disabled]="isRunning">Run Sequence</button>
+    <button
+      class="bg-slate-700/80 hover:bg-slate-600 text-slate-300 transition-colors font-bold py-2.5 px-6 rounded-xl border border-slate-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      (click)="resetLevel()"
+      [disabled]="isRunning()"
+    >
+      Reset
+    </button>
+    <button
+      class="bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white transition-all font-bold py-2.5 px-6 rounded-xl shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+      (click)="runProgram()"
+      [disabled]="isRunning()"
+    >
+      Run Sequence
+    </button>
   </div>
 
   <div class="relative z-10 flex-1 p-6 pt-24 flex flex-wrap gap-6 overflow-y-auto custom-scrollbar">
-    <div class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner">
-      <h3 class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2">Toolbox</h3>
-      <div id="toolbox" cdkDropList [cdkDropListData]="availableCommands" [cdkDropListConnectedTo]="['program-area']"
-        class="command-list toolbox flex-1 bg-slate-950/50 rounded-xl p-3 border border-slate-800">
-        <div class="command-card cursor-grab active:cursor-grabbing font-bold bg-slate-700 hover:bg-slate-600 text-cyan-50 p-3 mb-3 rounded-lg border border-slate-600 shadow-md transition-colors" *ngFor="let item of availableCommands" cdkDrag>
-          {{ item.label }}
-          <div *cdkDragPreview class="command-card cursor-grabbing font-bold bg-slate-600 text-cyan-50 p-3 rounded-lg border border-slate-500 shadow-2xl shadow-cyan-900/50">{{ item.label }}</div>
-        </div>
+    <div
+      class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner"
+    >
+      <h3 class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2">
+        Toolbox
+      </h3>
+      <div
+        id="toolbox"
+        cdkDropList
+        [cdkDropListData]="availableCommands"
+        [cdkDropListConnectedTo]="['program-area']"
+        class="command-list toolbox flex-1 bg-slate-950/50 rounded-xl p-3 border border-slate-800"
+      >
+        @for (item of availableCommands; track item) {
+          <div
+            class="command-card cursor-grab active:cursor-grabbing font-bold bg-slate-700 hover:bg-slate-600 text-cyan-50 p-3 mb-3 rounded-lg border border-slate-600 shadow-md transition-colors"
+            cdkDrag
+          >
+            {{ item.label }}
+            <div
+              *cdkDragPreview
+              class="command-card cursor-grabbing font-bold bg-slate-600 text-cyan-50 p-3 rounded-lg border border-slate-500 shadow-2xl shadow-cyan-900/50"
+            >
+              {{ item.label }}
+            </div>
+          </div>
+        }
       </div>
 
-      <div id="trash" cdkDropList [cdkDropListData]="trash" class="mt-6 h-20 border-2 border-dashed border-rose-500/50 hover:border-rose-400 bg-rose-950/20 rounded-xl flex items-center justify-center text-rose-400 transition-colors" (cdkDropListDropped)="trashDrop($event)">
+      <div
+        id="trash"
+        cdkDropList
+        [cdkDropListData]="trash()"
+        class="mt-6 h-20 border-2 border-dashed border-rose-500/50 hover:border-rose-400 bg-rose-950/20 rounded-xl flex items-center justify-center text-rose-400 transition-colors"
+        (cdkDropListDropped)="trashDrop($event)"
+      >
         <p class="font-semibold flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
           Drop to delete
         </p>
       </div>
     </div>
 
-    <div class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner">
-      <h3 class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2">Sequence</h3>
-      <div id="program-area" cdkDropList [cdkDropListData]="program" [cdkDropListConnectedTo]="['trash']"
-        class="command-list sequence flex-1 bg-slate-950/50 rounded-xl p-3 border border-slate-800" (cdkDropListDropped)="drop($event)">
-        <div class="command-card cursor-grab active:cursor-grabbing font-bold bg-cyan-700 hover:bg-cyan-600 text-cyan-50 p-3 mb-3 rounded-lg border border-cyan-600 shadow-md transition-colors" *ngFor="let item of program" cdkDrag>
-          {{ item.label }}
-          <div *cdkDragPreview class="command-card cursor-grabbing font-bold bg-cyan-600 text-cyan-50 p-3 rounded-lg border border-cyan-500 shadow-2xl shadow-cyan-900/50">{{ item.label }}</div>
-        </div>
-        <div *ngIf="program.length === 0" class="text-slate-500 text-center py-10 italic">
-          Drag commands here to build your sequence.
-        </div>
+    <div
+      class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner"
+    >
+      <h3 class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2">
+        Sequence
+      </h3>
+      <div
+        id="program-area"
+        cdkDropList
+        [cdkDropListData]="program()"
+        [cdkDropListConnectedTo]="['trash']"
+        class="command-list sequence flex-1 bg-slate-950/50 rounded-xl p-3 border border-slate-800"
+        (cdkDropListDropped)="drop($event)"
+      >
+        @for (item of program(); track item) {
+          <div
+            class="command-card cursor-grab active:cursor-grabbing font-bold bg-cyan-700 hover:bg-cyan-600 text-cyan-50 p-3 mb-3 rounded-lg border border-cyan-600 shadow-md transition-colors"
+            cdkDrag
+          >
+            {{ item.label }}
+            <div
+              *cdkDragPreview
+              class="command-card cursor-grabbing font-bold bg-cyan-600 text-cyan-50 p-3 rounded-lg border border-cyan-500 shadow-2xl shadow-cyan-900/50"
+            >
+              {{ item.label }}
+            </div>
+          </div>
+        }
+        @if (program().length === 0) {
+          <div class="text-slate-500 text-center py-10 italic">
+            Drag commands here to build your sequence.
+          </div>
+        }
       </div>
     </div>
 
-    <div class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner items-center">
-      <h3 class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2 w-full text-left">Simulation</h3>
-      <canvas #gameCanvas width="250" height="250" class="bg-slate-950 border-2 border-slate-700 rounded-xl shadow-lg mt-4"></canvas>
+    <div
+      class="flex-1 min-w-[250px] bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 flex flex-col shadow-inner items-center"
+    >
+      <h3
+        class="text-xl font-bold text-slate-200 mb-4 border-b border-slate-700/50 pb-2 w-full text-left"
+      >
+        Simulation
+      </h3>
+      <canvas
+        #gameCanvas
+        width="250"
+        height="250"
+        class="bg-slate-950 border-2 border-slate-700 rounded-xl shadow-lg mt-4"
+      ></canvas>
 
-      <div class="mt-6 p-4 w-full bg-emerald-950/40 border border-emerald-500/50 rounded-xl text-center shadow-[0_0_15px_rgba(16,185,129,0.2)] animate-pulse" *ngIf="isSuccess">
-        <h3 class="text-emerald-400 font-extrabold text-xl mb-1">Success!</h3>
-        <p class="text-emerald-200/80 font-medium">Target sequence completed.</p>
-      </div>
+      @if (isSuccess()) {
+        <div
+          class="mt-6 p-4 w-full bg-emerald-950/40 border border-emerald-500/50 rounded-xl text-center shadow-[0_0_15px_rgba(16,185,129,0.2)] animate-pulse"
+        >
+          <h3 class="text-emerald-400 font-extrabold text-xl mb-1">Success!</h3>
+          <p class="text-emerald-200/80 font-medium">Target sequence completed.</p>
+        </div>
+      }
     </div>
   </div>
 </div>

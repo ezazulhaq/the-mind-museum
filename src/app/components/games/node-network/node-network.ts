@@ -1,13 +1,21 @@
-import { Component, ElementRef, ViewChild, PLATFORM_ID, inject, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  PLATFORM_ID,
+  inject,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-node-network',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './node-network.html',
-  styleUrl: './node-network.css'
+  styleUrl: './node-network.css',
 })
 export class NodeNetwork implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
@@ -30,9 +38,13 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
             const scene = this;
             const centerX = scene.cameras.main.width / 2;
 
-            scene.add.text(centerX, 30, 'Node Network', {
-              fontFamily: 'monospace', fontSize: '32px', color: '#38bdf8'
-            }).setOrigin(0.5);
+            scene.add
+              .text(centerX, 30, 'Node Network', {
+                fontFamily: 'monospace',
+                fontSize: '32px',
+                color: '#38bdf8',
+              })
+              .setOrigin(0.5);
 
             let moves = 0;
             const maxMoves = 10;
@@ -41,21 +53,48 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
             let gameOver = false;
             let isMoving = false;
 
-            const moveText = scene.add.text(centerX, 570, `Moves: ${moves} / ${maxMoves}`, {
-              fontFamily: 'monospace', fontSize: '24px', color: '#facc15'
-            }).setOrigin(0.5);
+            const moveText = scene.add
+              .text(centerX, 570, `Moves: ${moves} / ${maxMoves}`, {
+                fontFamily: 'monospace',
+                fontSize: '24px',
+                color: '#facc15',
+              })
+              .setOrigin(0.5);
 
-            const statusText = scene.add.text(centerX, 300, '', {
-              fontFamily: 'monospace', fontSize: '40px', color: '#ffffff',
-              backgroundColor: '#000000', padding: { x: 20, y: 20 }
-            }).setOrigin(0.5).setDepth(10).setVisible(false);
+            const statusText = scene.add
+              .text(centerX, 300, '', {
+                fontFamily: 'monospace',
+                fontSize: '40px',
+                color: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 20, y: 20 },
+              })
+              .setOrigin(0.5)
+              .setDepth(10)
+              .setVisible(false);
 
             // Sparse edges mapping the 6x6 grid
             const edges = [
-              [7, 8], [7, 13], [8, 9], [9, 10], [10, 16],
-              [8, 14], [13, 19], [19, 25], [25, 26], [26, 32],
-              [14, 15], [15, 16], [15, 21], [21, 27], [21, 22],
-              [22, 28], [27, 28], [27, 33], [22, 23], [16, 17]
+              [7, 8],
+              [7, 13],
+              [8, 9],
+              [9, 10],
+              [10, 16],
+              [8, 14],
+              [13, 19],
+              [19, 25],
+              [25, 26],
+              [26, 32],
+              [14, 15],
+              [15, 16],
+              [15, 21],
+              [21, 27],
+              [21, 22],
+              [22, 28],
+              [27, 28],
+              [27, 33],
+              [22, 23],
+              [16, 17],
             ];
 
             const adj: { [key: number]: number[] } = {};
@@ -85,7 +124,7 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
             const updateHighlights = () => {
               nodeObjects.forEach((c) => c.setStrokeStyle()); // Clear existing stroke
               if (gameOver || isMoving) return;
-              
+
               adj[currentNode].forEach((neighbor: number) => {
                 nodeObjects[neighbor].setStrokeStyle(3, 0xffffff); // Highlight connected
               });
@@ -109,11 +148,11 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
               }
             };
 
-            nodesData.forEach(n => {
+            nodesData.forEach((n) => {
               let color = 0x475569; // default gray
               if (n.id === 7) color = 0x3b82f6; // source blue
               if (n.id === destId) color = 0x10b981; // dest green
-              
+
               const circle = scene.add.circle(n.x, n.y, 20, color);
               circle.setInteractive();
               nodeObjects.push(circle);
@@ -121,13 +160,13 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
               circle.on('pointerdown', () => {
                 if (gameOver || isMoving) return;
                 if (!adj[currentNode].includes(n.id)) return; // Validate connected move
-                
+
                 isMoving = true;
                 currentNode = n.id;
                 moves++;
                 moveText.setText(`Moves: ${moves} / ${maxMoves}`);
                 updateHighlights(); // Clear highlights during move
-                
+
                 scene.tweens.add({
                   targets: packet,
                   x: n.x,
@@ -136,15 +175,15 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
                   onComplete: () => {
                     isMoving = false;
                     checkWinLose();
-                  }
+                  },
                 });
               });
             });
 
             packet = scene.add.circle(nodesData[7].x, nodesData[7].y, 10, 0xfacc15).setDepth(5);
             updateHighlights();
-          }
-        }
+          },
+        },
       });
     }
   }

@@ -1,13 +1,21 @@
-import { Component, ElementRef, ViewChild, PLATFORM_ID, inject, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  PLATFORM_ID,
+  inject,
+  AfterViewInit,
+  OnDestroy,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-contraption-crafter',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './contraption-crafter.html',
-  styleUrl: './contraption-crafter.css'
+  styleUrl: './contraption-crafter.css',
 })
 export class ContraptionCrafter implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
@@ -46,7 +54,7 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           this.bucketSensor = this.matter.add.rectangle(700, 500, 140, 80, {
             isStatic: true,
             isSensor: true,
-            label: 'bucketSensor'
+            label: 'bucketSensor',
           });
 
           // Ground (fallback)
@@ -80,13 +88,15 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
 
         override update() {
           if (this.ball && this.fans.length > 0) {
-            this.fans.forEach(fan => {
+            this.fans.forEach((fan) => {
               // Simple AABB check for fan zone
               const fanBounds = fan.getBounds();
-              if (this.ball.position.x > fanBounds.x &&
+              if (
+                this.ball.position.x > fanBounds.x &&
                 this.ball.position.x < fanBounds.x + fanBounds.width &&
                 this.ball.position.y > fanBounds.y &&
-                this.ball.position.y < fanBounds.y + fanBounds.height) {
+                this.ball.position.y < fanBounds.y + fanBounds.height
+              ) {
                 this.matter.body.applyForce(this.ball, this.ball.position, { x: 0, y: -0.005 });
               }
             });
@@ -101,9 +111,18 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           bg.setDepth(10);
           this.uiGroup.add(bg);
 
-          const createButton = (x: number, y: number, text: string, onClick: () => void, isItem = false) => {
+          const createButton = (
+            x: number,
+            y: number,
+            text: string,
+            onClick: () => void,
+            isItem = false,
+          ) => {
             const btnBg = this.add.rectangle(x, y, 100, 30, 0x3b82f6).setInteractive().setDepth(11);
-            const btnText = this.add.text(x, y, text, { fontSize: '16px', color: '#fff' }).setOrigin(0.5).setDepth(12);
+            const btnText = this.add
+              .text(x, y, text, { fontSize: '16px', color: '#fff' })
+              .setOrigin(0.5)
+              .setDepth(12);
 
             btnBg.on('pointerdown', onClick);
 
@@ -127,22 +146,29 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           createButton(startX + 220, 40, 'Platform', () => this.selectItem('Platform'), true);
           createButton(startX + 330, 40, 'Fan', () => this.selectItem('Fan'), true);
 
-          this.statusText = this.add.text(400, 85, 'Select an item to place (0/8)', { fontSize: '14px', color: '#cbd5e1' }).setOrigin(0.5).setDepth(12);
+          this.statusText = this.add
+            .text(400, 85, 'Select an item to place (0/8)', { fontSize: '14px', color: '#cbd5e1' })
+            .setOrigin(0.5)
+            .setDepth(12);
 
-          this.winText = this.add.text(400, 300, 'Contraption Success!', {
-            fontSize: '48px',
-            color: '#4ade80',
-            fontStyle: 'bold',
-            stroke: '#000',
-            strokeThickness: 6
-          }).setOrigin(0.5).setDepth(20).setVisible(false);
+          this.winText = this.add
+            .text(400, 300, 'Contraption Success!', {
+              fontSize: '48px',
+              color: '#4ade80',
+              fontStyle: 'bold',
+              stroke: '#000',
+              strokeThickness: 6,
+            })
+            .setOrigin(0.5)
+            .setDepth(20)
+            .setVisible(false);
 
           this.updateStatus();
         }
 
         selectItem(type: string) {
           this.selectedItemType = type;
-          this.itemButtons.forEach(btn => {
+          this.itemButtons.forEach((btn) => {
             if (btn.name === type) {
               btn.bg.setFillStyle(0x2563eb);
             } else {
@@ -185,7 +211,7 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           this.ball = this.matter.add.circle(50, 150, 15, {
             restitution: 0.6,
             density: 0.05,
-            label: 'ball'
+            label: 'ball',
           });
         }
 
@@ -195,7 +221,7 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
             this.ball = null;
           }
 
-          this.placedItems.forEach(item => {
+          this.placedItems.forEach((item) => {
             if (item.type === 'fan') {
               this.matter.world.remove(item.base);
               item.windZone.destroy();
@@ -231,10 +257,10 @@ export class ContraptionCrafter implements AfterViewInit, OnDestroy {
           default: 'matter',
           matter: {
             gravity: { x: 0, y: 1 },
-            debug: true
-          }
+            debug: true,
+          },
         },
-        scene: MainScene
+        scene: MainScene,
       });
     }
   }

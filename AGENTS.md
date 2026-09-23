@@ -9,7 +9,7 @@ This project is a monolithic full-stack application leveraging the latest Angula
 **Frontend:**
 - **Framework:** Angular 22 (Standalone Components exclusively).
 - **Styling:** Tailwind CSS v4 (Flat `.css` files, utilizing PostCSS via `.postcssrc.json`).
-- **State Management:** Reactive services with RxJS and Angular Signals (if applicable).
+- **State Management:** Zoneless Architecture utilizing Angular Signals (`signal`, `computed`, `effect`). Do NOT rely on Zone.js or traditional properties for UI updates.
 - **Game Engines:** Phaser 4 (2D physics/rendering) and Three.js (3D rendering), embedded within Angular components using HTML5 Canvas refs.
 - **Drag & Drop:** `@angular/cdk/drag-drop` (used in Algorithmic Alchemist).
 
@@ -79,3 +79,13 @@ src/
 5. **Game Documentation:**
    - The project maintains a `GAMES.md` file detailing the functionalities of each game.
    - **IMPORTANT:** If you update an existing game's core functionality or add a completely new game, you MUST update `GAMES.md` accordingly to keep the documentation synchronized.
+6. **Zoneless State Management (Angular 22):**
+   - The app operates effectively without `zone.js`. Do NOT use traditional boolean flags (e.g., `loading = true`) or manual `ChangeDetectorRef` triggers for async data.
+   - **MUST USE** `signal()` for any component or service state that the template depends on.
+   - Always update the template to invoke signals (e.g., `@if (loading())` instead of `@if (loading)`).
+   - Use `effect()` for side effects like `localStorage` synchronization or interacting with non-Angular libraries (like HTML Canvas) when reactive state changes.
+   - For simple async operations, prefer `await firstValueFrom(this.http...)` rather than manual `.subscribe()` chains to keep logic clean and predictable.
+7. **Modern Control Flow Syntax:**
+   - Always use the built-in Angular control flow syntax (`@if`, `@for`, `@switch`, `@empty`) in HTML templates.
+   - Do NOT use traditional structural directives like `*ngIf`, `*ngFor`, or `*ngSwitch`.
+   - Remember to track loops properly using `@for (item of items(); track item.id)`.

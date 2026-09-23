@@ -1,7 +1,21 @@
-import { Component, OnInit, PLATFORM_ID, inject, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  PLATFORM_ID,
+  inject,
+  ViewChild,
+  ElementRef,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { DragDropModule, CdkDragDrop, moveItemInArray, copyArrayItem, transferArrayItem } from '@angular/cdk/drag-drop';
+import {
+  DragDropModule,
+  CdkDragDrop,
+  moveItemInArray,
+  copyArrayItem,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
 
 interface Command {
   id: string;
@@ -12,9 +26,9 @@ interface Command {
 @Component({
   selector: 'app-algorithmic-alchemist',
   standalone: true,
-  imports: [CommonModule, DragDropModule, RouterModule],
+  imports: [DragDropModule, RouterModule],
   templateUrl: './algorithmic-alchemist.html',
-  styleUrl: './algorithmic-alchemist.css'
+  styleUrl: './algorithmic-alchemist.css',
 })
 export class AlgorithmicAlchemist implements OnInit {
   @ViewChild('gameCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -26,20 +40,20 @@ export class AlgorithmicAlchemist implements OnInit {
     { id: 'c2', type: 'TurnRight', label: '↻ Turn Right' },
     { id: 'c3', type: 'TurnLeft', label: '↺ Turn Left' },
     { id: 'c4', type: 'Repeat3', label: '🔁 Repeat ×3' },
-    { id: 'c5', type: 'IfWall', label: '🧱 If Wall → Turn' }
+    { id: 'c5', type: 'IfWall', label: '🧱 If Wall → Turn' },
   ];
 
-  program: Command[] = [];
-  trash: Command[] = [];
+  program = signal<Command[]>([]);
+  trash = signal<Command[]>([]);
 
   gridSize = 5;
   cellSize = 50;
 
-  player = { x: 0, y: 0, dir: 0 }; // dir: 0=right, 1=down, 2=left, 3=up
+  player = { x: 0, y: 0, dir: 0 };
   target = { x: 4, y: 4 };
 
-  isRunning = false;
-  isSuccess = false;
+  isRunning = signal(false);
+  isSuccess = signal(false);
 
   ngOnInit() {
     this.resetLevel();
@@ -53,33 +67,36 @@ export class AlgorithmicAlchemist implements OnInit {
 
   resetLevel() {
     this.player = { x: 0, y: 0, dir: 0 };
-    this.isRunning = false;
-    this.isSuccess = false;
+    this.isRunning.set(false);
+    this.isSuccess.set(false);
     if (this.canvasRef && isPlatformBrowser(this.platformId)) {
       this.draw();
     }
   }
 
   drop(event: CdkDragDrop<Command[]>) {
+    const data = [...this.program()];
+
     if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(data, event.previousIndex, event.currentIndex);
+      this.program.set(data);
     } else {
       if (event.previousContainer.id === 'toolbox') {
-        // Copy from toolbox to program
         const item = event.previousContainer.data[event.previousIndex];
         const clone = { ...item, id: item.id + '-' + Date.now() };
-        this.program.splice(event.currentIndex, 0, clone);
+        data.splice(event.currentIndex, 0, clone);
+        this.program.set(data);
       } else {
-        // Move within program or trash
         if (event.container.id === 'trash') {
-          this.program.splice(event.previousIndex, 1);
+          data.splice(event.previousIndex, 1);
+          this.program.set(data);
         } else {
-          transferArrayItem(
-            event.previousContainer.data,
-            event.container.data,
-            event.previousIndex,
-            event.currentIndex
-          );
+          // Both are same type for this simple array management
+          const prevData = [...event.previousContainer.data];
+          transferArrayItem(prevData, data, event.previousIndex, event.currentIndex);
+          // Wait, CdkDragDrop modifies data directly if we let it.
+          // We must update the signal array manually.
+          this.program.set(data);
         }
       }
     }
@@ -87,26 +104,27 @@ export class AlgorithmicAlchemist implements OnInit {
 
   trashDrop(event: CdkDragDrop<Command[]>) {
     if (event.previousContainer.id !== 'toolbox') {
-      this.program.splice(event.previousIndex, 1);
+      const data = [...this.program()];
+      data.splice(event.previousIndex, 1);
+      this.program.set(data);
     }
   }
 
   async runProgram() {
-    if (this.isRunning) return;
-    this.isRunning = true;
+    if (this.isRunning()) return;
+    this.isRunning.set(true);
     this.resetLevel();
-    this.isRunning = true;
+    this.isRunning.set(true);
 
-    // Expand program: Repeat3 repeats the NEXT command 3 times, IfWall turns right if facing a wall
     const expanded: Command[] = [];
-    for (let i = 0; i < this.program.length; i++) {
-      const cmd = this.program[i];
+    const prog = this.program();
+    for (let i = 0; i < prog.length; i++) {
+      const cmd = prog[i];
       if (cmd.type === 'Repeat3') {
-        // Repeat the next command 3 times
-        const next = this.program[i + 1];
+        const next = prog[i + 1];
         if (next && next.type !== 'Repeat3' && next.type !== 'IfWall') {
           for (let r = 0; r < 3; r++) expanded.push(next);
-          i++; // skip the next command since we consumed it
+          i++;
         }
       } else {
         expanded.push(cmd);
@@ -120,13 +138,13 @@ export class AlgorithmicAlchemist implements OnInit {
     }
 
     if (this.player.x === this.target.x && this.player.y === this.target.y) {
-      this.isSuccess = true;
+      this.isSuccess.set(true);
     }
-    this.isRunning = false;
+    this.isRunning.set(false);
   }
 
   executeCommand(cmd: Command): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (cmd.type === 'MoveForward') {
         if (this.player.dir === 0 && this.player.x < this.gridSize - 1) this.player.x++;
         if (this.player.dir === 1 && this.player.y < this.gridSize - 1) this.player.y++;
@@ -152,7 +170,7 @@ export class AlgorithmicAlchemist implements OnInit {
   }
 
   delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   draw() {
@@ -177,7 +195,12 @@ export class AlgorithmicAlchemist implements OnInit {
 
     // Draw target
     ctx.fillStyle = '#10b981';
-    ctx.fillRect(this.target.x * this.cellSize + 5, this.target.y * this.cellSize + 5, this.cellSize - 10, this.cellSize - 10);
+    ctx.fillRect(
+      this.target.x * this.cellSize + 5,
+      this.target.y * this.cellSize + 5,
+      this.cellSize - 10,
+      this.cellSize - 10,
+    );
 
     // Draw player
     ctx.fillStyle = '#3b82f6';

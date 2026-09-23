@@ -1,13 +1,22 @@
-import { Component, ElementRef, ViewChild, PLATFORM_ID, inject, AfterViewInit, OnDestroy } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  PLATFORM_ID,
+  inject,
+  AfterViewInit,
+  OnDestroy,
+  signal,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-optic-architect',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './optic-architect.html',
-  styleUrl: './optic-architect.css'
+  styleUrl: './optic-architect.css',
 })
 export class OpticArchitect implements AfterViewInit, OnDestroy {
   @ViewChild('gameContainer') container!: ElementRef;
@@ -19,6 +28,8 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
   private renderer: any;
   private animationFrameId: number | null = null;
   private cubes: any[] = [];
+
+  hasWon = signal(false);
 
   async ngAfterViewInit() {
     if (isPlatformBrowser(this.platformId)) {
@@ -88,22 +99,6 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       let isDragging = false;
       let previousMousePosition = { x: 0, y: 0 };
 
-      const targetRotation = { x: Math.PI / 4, y: Math.PI / 4 }; // Specific angle to win
-      let hasWon = false;
-
-      // HTML overlay text for UI
-      const uiDiv = document.createElement('div');
-      uiDiv.style.position = 'absolute';
-      uiDiv.style.top = '20px';
-      uiDiv.style.left = '20px';
-      uiDiv.style.color = 'white';
-      uiDiv.style.fontFamily = 'monospace';
-      uiDiv.style.fontSize = '18px';
-      uiDiv.style.pointerEvents = 'none';
-      uiDiv.innerHTML = 'Drag to rotate the shape.<br>Click cubes to select. Align to see an "L".';
-      this.container.nativeElement.style.position = 'relative';
-      this.container.nativeElement.appendChild(uiDiv);
-
       // Raycaster for click-to-select cubes
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
@@ -141,10 +136,10 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       });
 
       this.renderer.domElement.addEventListener('pointermove', (event: any) => {
-        if (isDragging && !hasWon) {
+        if (isDragging && !this.hasWon()) {
           const deltaMove = {
             x: event.clientX - previousMousePosition.x,
-            y: event.clientY - previousMousePosition.y
+            y: event.clientY - previousMousePosition.y,
           };
 
           group.rotation.y += deltaMove.x * 0.01;
@@ -159,8 +154,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
 
           // If looking straight at the XY plane (z-axis alignment)
           if (rotX < 0.2 && rotY < 0.2) {
-            hasWon = true;
-            uiDiv.innerHTML = '<span style="color: #10b981; font-size: 24px; font-weight: bold">Alignment Complete!</span><br>Perspective matched.';
+            this.hasWon.set(true);
             group.rotation.x = 0;
             group.rotation.y = 0;
           }
@@ -170,9 +164,6 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
       // Animation Loop
       const animate = () => {
         this.animationFrameId = requestAnimationFrame(animate);
-
-        // No auto-rotation anymore; manual rotation only
-
         this.renderer.render(this.scene, this.camera);
       };
 
@@ -190,7 +181,7 @@ export class OpticArchitect implements AfterViewInit, OnDestroy {
     }
 
     // Clean up ThreeJS scene
-    this.cubes.forEach(cube => {
+    this.cubes.forEach((cube) => {
       cube.geometry.dispose();
       cube.material.dispose();
     });

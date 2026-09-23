@@ -1,36 +1,93 @@
-<div class="fixed inset-4 md:inset-8 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col z-40">
+<div
+  class="fixed inset-4 md:inset-8 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col z-40"
+>
   <!-- Dynamic Background Glow for Games -->
-  <div class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse" style="animation-duration: 8s;"></div>
-  <div class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse" style="animation-duration: 12s;"></div>
+  <div
+    class="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
+    style="animation-duration: 8s"
+  ></div>
+  <div
+    class="absolute -bottom-[20%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse"
+    style="animation-duration: 12s"
+  ></div>
 
   <!-- Floating Back Button (Top Left) -->
-  <button routerLink="/dashboard" class="absolute top-6 left-6 z-50 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  <button
+    routerLink="/dashboard"
+    class="absolute top-6 left-6 z-50 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2.5"
+        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+      />
     </svg>
   </button>
 
   <!-- Floating Score (Top Right) -->
-  <div class="absolute top-6 right-6 z-50 text-cyan-300 font-bold text-xl px-6 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner">
-    <span>Score: {{ score }}</span>
+  <div
+    class="absolute top-6 right-6 z-50 text-cyan-300 font-bold text-xl px-6 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner"
+  >
+    <span>Score: {{ score() }}</span>
   </div>
 
-  <div class="relative z-10 flex-1 w-full h-full" *ngIf="!gameOver">
-    <div *ngFor="let word of words; trackBy: trackByFn" class="falling-word absolute font-mono text-2xl font-bold transition-all duration-75 linear drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]" [style.left.%]="word.x"
-      [style.top.%]="word.y" [class.matched]="word.text.startsWith(currentInput) && currentInput.length > 0">
-      <span class="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]" *ngIf="word.text.startsWith(currentInput) && currentInput.length > 0">{{ getTypedPart(word.text) }}</span><span class="text-slate-400" [class.text-cyan-400]="word.text.startsWith(currentInput) && currentInput.length > 0">{{ getUntypedPart(word.text) }}</span>
+  @if (!gameOver()) {
+    <div class="relative z-10 flex-1 w-full h-full">
+      @for (word of words(); track trackByFn($index, word)) {
+        <div
+          class="falling-word absolute font-mono text-2xl font-bold transition-all duration-75 linear drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
+          [style.left.%]="word.x"
+          [style.top.%]="word.y"
+          [class.matched]="word.text.startsWith(currentInput()) && currentInput().length > 0"
+        >
+          @if (word.text.startsWith(currentInput()) && currentInput().length > 0) {
+            <span class="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">{{
+              getTypedPart(word.text)
+            }}</span>
+          }
+          <span
+            class="text-slate-400"
+            [class.text-cyan-400]="
+              word.text.startsWith(currentInput()) && currentInput().length > 0
+            "
+            >{{ getUntypedPart(word.text) }}</span
+          >
+        </div>
+      }
+      <div
+        class="absolute bottom-6 left-6 font-mono text-3xl font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+      >
+        > {{ currentInput() }}<span class="cursor animate-[blink_1s_infinite] opacity-100">_</span>
+      </div>
     </div>
+  }
 
-    <div class="absolute bottom-6 left-6 font-mono text-3xl font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-      > {{ currentInput }}<span class="cursor animate-[blink_1s_infinite] opacity-100">_</span>
+  @if (gameOver()) {
+    <div
+      class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)]"
+      >
+        <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">SYSTEM FAILURE</h2>
+        <p class="text-2xl text-slate-300 mb-8 font-mono">
+          Final Score: <span class="text-white font-bold">{{ score() }}</span>
+        </p>
+        <button
+          class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(225,29,72,0.5)]"
+          (click)="startGame()"
+        >
+          Restart System
+        </button>
+      </div>
     </div>
-  </div>
-
-  <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm" *ngIf="gameOver">
-    <div class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)]">
-      <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">SYSTEM FAILURE</h2>
-      <p class="text-2xl text-slate-300 mb-8 font-mono">Final Score: <span class="text-white font-bold">{{ score }}</span></p>
-      <button class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(225,29,72,0.5)]" (click)="startGame()">Restart System</button>
-    </div>
-  </div>
+  }
 </div>
