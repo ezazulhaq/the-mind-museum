@@ -76,3 +76,6 @@ src/
    - Standalone components using `routerLink` MUST explicitly import `RouterModule` in their `@Component({ imports: [...] })` array. Failure to do so will result in silent failures where buttons are unclickable.
 4. **Building & Caching:**
    - The Angular CLI aggressively caches builds. If you modify core architectural files like `.postcssrc.json` or `angular.json`, ensure you advise the user to explicitly restart their development server.
+5. **Game Documentation:**
+   - The project maintains a `GAMES.md` file detailing the functionalities of each game.
+   - **IMPORTANT:** If you update an existing game's core functionality or add a completely new game, you MUST update `GAMES.md` accordingly to keep the documentation synchronized.
