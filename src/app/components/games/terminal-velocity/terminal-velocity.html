@@ -66,6 +66,42 @@
       class="absolute bottom-6 left-6 font-mono text-3xl font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
       > {{ currentInput() }}<span class="cursor animate-[blink_1s_infinite] opacity-100">_</span>
     </div>
+
+    <!-- Animated Virtual Keyboard (Bottom Right) -->
+    <div id="keyboard-container"
+      class="absolute bottom-6 right-6 z-50 flex flex-col gap-2 p-4 bg-slate-950/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-visible">
+      @for (row of keyboardRows; track $index) {
+      <div class="flex justify-center gap-1.5 sm:gap-2">
+        @for (key of row; track key) {
+        <div [id]="'key-' + key" [class]="getFingerZone(key)">
+          <span class="leading-none" [class.mt-1.5]="isHomeRowKey(key)">{{ key }}</span>
+          @if (isHomeRowKey(key)) {
+          <div class="w-1.5 h-1.5 rounded-full bg-current opacity-60 mt-0.5"></div>
+          }
+        </div>
+        }
+      </div>
+      }
+      <!-- Spacebar -->
+      <div class="flex justify-center mt-1">
+        <div id="key-space"
+          class="transition-all duration-75 flex items-center justify-center h-8 sm:h-10 w-48 sm:w-64 rounded-lg border font-bold uppercase"
+          [class.bg-slate-900]="!activeKeys().has(' ')" [class.border-slate-700]="!activeKeys().has(' ')"
+          [class.text-slate-400]="!activeKeys().has(' ')" [class.bg-slate-500]="activeKeys().has(' ')"
+          [class.border-slate-400]="activeKeys().has(' ')" [class.text-white]="activeKeys().has(' ')"
+          [class.shadow-[0_0_15px_rgba(148,163,184,0.6)]]="activeKeys().has(' ')"
+          [class.translate-y-1]="activeKeys().has(' ')" [class.scale-95]="activeKeys().has(' ')">SPACE</div>
+      </div>
+
+      <!-- Ghost Fingers -->
+      @for (finger of getFingersArray(); track finger.id) {
+      <div
+        class="absolute w-4 h-6 sm:w-6 sm:h-8 rounded-[40%] opacity-80 pointer-events-none transition-all duration-150 ease-out shadow-[0_0_15px_currentColor] z-50 border-2 border-white/20"
+        [class]="finger.color" [style.left.px]="finger.x" [style.top.px]="finger.y"
+        [style.transform]="'translate(-50%, -50%)'">
+      </div>
+      }
+    </div>
   </div>
   }
 
