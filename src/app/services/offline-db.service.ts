@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 export class OfflineDbService {
   private platformId = inject(PLATFORM_ID);
   private http = inject(HttpClient);
-  
+
   private db: any = null;
   private isInitialized = false;
 
@@ -78,6 +78,18 @@ export class OfflineDbService {
   // --- Players ---
   async addPlayer(username: string): Promise<string> {
     await this.init();
+
+    // Check for existing player
+    const existing = this.db.exec({
+      sql: 'SELECT id FROM players WHERE username = ? COLLATE NOCASE',
+      bind: [username],
+      returnValue: 'resultRows'
+    });
+
+    if (existing && existing.length > 0) {
+      return existing[0][0]; // Return existing player ID
+    }
+
     const id = this.generateId();
     this.db.exec({
       sql: 'INSERT INTO players (id, username, synced) VALUES (?, ?, 0)',
@@ -164,10 +176,10 @@ export class OfflineDbService {
     const totalPlayers = this.db.exec({ sql: 'SELECT COUNT(*) FROM players', returnValue: 'resultRows' })[0][0];
     const avgWpmRaw = this.db.exec({ sql: 'SELECT AVG(value) FROM telemetry WHERE metric_type = ?', bind: ['WPM'], returnValue: 'resultRows' });
     const avgAccuracyRaw = this.db.exec({ sql: 'SELECT AVG(value) FROM telemetry WHERE metric_type = ?', bind: ['ACCURACY'], returnValue: 'resultRows' });
-    
-    const sessionCountByGame = this.db.exec({ 
-      sql: 'SELECT game_id, COUNT(*) as count, AVG(duration_ms) as avg_duration FROM sessions GROUP BY game_id', 
-      returnValue: 'resultRows' 
+
+    const sessionCountByGame = this.db.exec({
+      sql: 'SELECT game_id, COUNT(*) as count, AVG(duration_ms) as avg_duration FROM sessions GROUP BY game_id',
+      returnValue: 'resultRows'
     }).map((r: any) => ({ game_id: r[0], count: r[1], avg_duration: r[2] }));
 
     const recentTelemetry = this.db.exec({
