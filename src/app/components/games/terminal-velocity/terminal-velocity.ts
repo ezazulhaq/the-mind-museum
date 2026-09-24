@@ -101,32 +101,32 @@ export class TerminalVelocity implements OnInit, OnDestroy {
     const k = key.toLowerCase();
     const active = this.activeKeys().has(k);
 
-    let base = 'bg-slate-900/60 border-slate-700/50 text-slate-400';
+    let base = 'bg-slate-900/20 border-slate-700/50 text-slate-400';
     let activeStyle = '';
 
     if (['q', 'a', 'z'].includes(k)) {
-      base = 'bg-slate-900/60 border-rose-500/30 text-rose-400';
+      base = 'bg-slate-900/20 border-rose-500/30 text-rose-400';
       activeStyle = 'bg-rose-500/40 border-rose-400 text-white shadow-[0_0_15px_rgba(225,29,72,0.6)] translate-y-1 scale-95';
     } else if (['w', 's', 'x'].includes(k)) {
-      base = 'bg-slate-900/60 border-amber-500/30 text-amber-400';
+      base = 'bg-slate-900/20 border-amber-500/30 text-amber-400';
       activeStyle = 'bg-amber-500/40 border-amber-400 text-white shadow-[0_0_15px_rgba(245,158,11,0.6)] translate-y-1 scale-95';
     } else if (['e', 'd', 'c'].includes(k)) {
-      base = 'bg-slate-900/60 border-yellow-500/30 text-yellow-400';
+      base = 'bg-slate-900/20 border-yellow-500/30 text-yellow-400';
       activeStyle = 'bg-yellow-500/40 border-yellow-400 text-white shadow-[0_0_15px_rgba(234,179,8,0.6)] translate-y-1 scale-95';
     } else if (['r', 't', 'f', 'g', 'v', 'b'].includes(k)) {
-      base = 'bg-slate-900/60 border-emerald-500/30 text-emerald-400';
+      base = 'bg-slate-900/20 border-emerald-500/30 text-emerald-400';
       activeStyle = 'bg-emerald-500/40 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.6)] translate-y-1 scale-95';
     } else if (['y', 'u', 'h', 'j', 'n', 'm'].includes(k)) {
-      base = 'bg-slate-900/60 border-cyan-500/30 text-cyan-400';
+      base = 'bg-slate-900/20 border-cyan-500/30 text-cyan-400';
       activeStyle = 'bg-cyan-500/40 border-cyan-400 text-white shadow-[0_0_15px_rgba(6,182,212,0.6)] translate-y-1 scale-95';
     } else if (['i', 'k'].includes(k)) {
-      base = 'bg-slate-900/60 border-blue-500/30 text-blue-400';
+      base = 'bg-slate-900/20 border-blue-500/30 text-blue-400';
       activeStyle = 'bg-blue-500/40 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.6)] translate-y-1 scale-95';
     } else if (['o', 'l'].includes(k)) {
-      base = 'bg-slate-900/60 border-indigo-500/30 text-indigo-400';
+      base = 'bg-slate-900/20 border-indigo-500/30 text-indigo-400';
       activeStyle = 'bg-indigo-500/40 border-indigo-400 text-white shadow-[0_0_15px_rgba(99,102,241,0.6)] translate-y-1 scale-95';
     } else if (['p', ';'].includes(k)) {
-      base = 'bg-slate-900/60 border-fuchsia-500/30 text-fuchsia-400';
+      base = 'bg-slate-900/20 border-fuchsia-500/30 text-fuchsia-400';
       activeStyle = 'bg-fuchsia-500/40 border-fuchsia-400 text-white shadow-[0_0_15px_rgba(217,70,239,0.6)] translate-y-1 scale-95';
     }
 

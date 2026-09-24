@@ -69,7 +69,7 @@
 
     <!-- Animated Virtual Keyboard (Bottom Right) -->
     <div id="keyboard-container"
-      class="absolute bottom-6 right-6 z-50 flex flex-col gap-2 p-4 bg-slate-950/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl overflow-visible">
+      class="absolute bottom-6 right-6 z-50 flex flex-col gap-2 p-4 bg-slate-950/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl overflow-visible">
       @for (row of keyboardRows; track $index) {
       <div class="flex justify-center gap-1.5 sm:gap-2">
         @for (key of row; track key) {
@@ -86,7 +86,7 @@
       <div class="flex justify-center mt-1">
         <div id="key-space"
           class="transition-all duration-75 flex items-center justify-center h-8 sm:h-10 w-48 sm:w-64 rounded-lg border font-bold uppercase"
-          [class.bg-slate-900]="!activeKeys().has(' ')" [class.border-slate-700]="!activeKeys().has(' ')"
+          [class.bg-slate-900/20]="!activeKeys().has(' ')" [class.border-slate-700]="!activeKeys().has(' ')"
           [class.text-slate-400]="!activeKeys().has(' ')" [class.bg-slate-500]="activeKeys().has(' ')"
           [class.border-slate-400]="activeKeys().has(' ')" [class.text-white]="activeKeys().has(' ')"
           [class.shadow-[0_0_15px_rgba(148,163,184,0.6)]]="activeKeys().has(' ')"

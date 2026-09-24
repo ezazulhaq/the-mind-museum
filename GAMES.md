@@ -16,6 +16,7 @@ A fast-paced typing game designed to test a player's typing speed and accuracy.
 - The player must type the words exactly as they appear in the terminal prompt at the bottom of the screen.
 - Successfully typing a word destroys it before it hits the bottom and grants points, with score multipliers scaling by difficulty (10x, 15x, 20x per character).
 - **Penalty System:** Typing an incorrect character (one that does not match the prefix of any falling word) clears the current input and deducts points based on difficulty (-5 Easy, -10 Medium, -15 Hard).
+- **Interactive Virtual Keyboard:** An animated, color-coded virtual keyboard sits in the bottom corner during gameplay. It tracks physical keystrokes in real-time and uses glowing fingertips to teach players standard touch-typing finger placements.
 - The game tracks and logs telemetry metrics such as **Words Per Minute (WPM)**, **Accuracy (%)**, and total score.
 - The game ends when a word hits the bottom of the screen ("Game Over"), providing an option to restart or change the difficulty level.
 
