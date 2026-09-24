@@ -14,7 +14,7 @@ A fast-paced typing game designed to test a player's typing speed and accuracy.
 - The player must type the words exactly as they appear in the terminal prompt at the bottom of the screen.
 - Successfully typing a word destroys it before it hits the bottom and grants points.
 - The game tracks and logs telemetry metrics such as **Words Per Minute (WPM)**, **Accuracy (%)**, and total score.
-- The game ends when a word hits the bottom of the screen ("System Failure").
+- The game ends when a word hits the bottom of the screen ("Game Over").
 
 ---
 
