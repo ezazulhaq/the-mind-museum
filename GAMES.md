@@ -10,11 +10,14 @@ This document outlines the six interactive games (exhibits) available in **The M
 
 **Functionality:**
 A fast-paced typing game designed to test a player's typing speed and accuracy. 
-- Words spawn at the top of the screen and fall downwards.
+- Features a full **Difficulty Selection Menu** (Easy, Medium, Hard).
+- Words spawn at the top of the screen and fall downwards. The speed, length, and spawn rate of the words scale up based on the chosen difficulty.
+- Easy uses short dictionary words, Medium uses intermediate words, and Hard introduces complex words with much faster fall speeds.
 - The player must type the words exactly as they appear in the terminal prompt at the bottom of the screen.
-- Successfully typing a word destroys it before it hits the bottom and grants points.
+- Successfully typing a word destroys it before it hits the bottom and grants points, with score multipliers scaling by difficulty (10x, 15x, 20x per character).
+- **Penalty System:** Typing an incorrect character (one that does not match the prefix of any falling word) clears the current input and deducts points based on difficulty (-5 Easy, -10 Medium, -15 Hard).
 - The game tracks and logs telemetry metrics such as **Words Per Minute (WPM)**, **Accuracy (%)**, and total score.
-- The game ends when a word hits the bottom of the screen ("Game Over").
+- The game ends when a word hits the bottom of the screen ("Game Over"), providing an option to restart or change the difficulty level.
 
 ---
 

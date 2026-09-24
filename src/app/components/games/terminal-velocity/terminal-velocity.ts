@@ -31,7 +31,8 @@ export class TerminalVelocity implements OnInit, OnDestroy {
   words = signal<Word[]>([]);
   currentInput = signal<string>('');
   score = signal<number>(0);
-  gameOver = signal<boolean>(false);
+  gameState = signal<'MENU' | 'PLAYING' | 'GAMEOVER'>('MENU');
+  currentDifficulty = signal<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
 
   private totalKeystrokes = 0;
   private correctKeystrokes = 0;
@@ -41,35 +42,33 @@ export class TerminalVelocity implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
   private playerState = inject(PlayerStateService);
-  private wordsList = [
-    'angular',
-    'component',
-    'observable',
-    'service',
-    'module',
-    'directive',
-    'pipe',
-    'template',
-    'router',
-    'interface',
-  ];
+
+  private wordsLists = {
+    EASY: ['cat', 'dog', 'tree', 'house', 'car', 'blue', 'red', 'sun', 'moon', 'star', 'bird', 'fish', 'book', 'shoe', 'pen', 'desk', 'door', 'wall', 'room', 'sky'],
+    MEDIUM: ['apple', 'banana', 'orange', 'grapes', 'window', 'picture', 'country', 'planet', 'animal', 'garden', 'school', 'friend', 'family', 'summer', 'winter', 'spring', 'autumn', 'forest', 'ocean', 'river'],
+    HARD: ['elephant', 'dinosaur', 'computer', 'television', 'university', 'restaurant', 'basketball', 'strawberry', 'watermelon', 'motorcycle', 'helicopter', 'butterfly', 'crocodile', 'astronaut', 'encyclopedia', 'chameleon', 'hippopotamus', 'rhinoceros']
+  };
+
   private wordIdCounter = 0;
 
   ngOnInit() {
-    this.startGame();
+    this.gameState.set('MENU');
   }
 
   ngOnDestroy() {
     this.stopGame();
   }
 
-  startGame() {
+  startGame(difficulty?: 'EASY' | 'MEDIUM' | 'HARD') {
+    if (difficulty) {
+      this.currentDifficulty.set(difficulty);
+    }
     this.words.set([]);
     this.score.set(0);
     this.totalKeystrokes = 0;
     this.correctKeystrokes = 0;
     this.currentInput.set('');
-    this.gameOver.set(false);
+    this.gameState.set('PLAYING');
     this.startTime = Date.now();
 
     if (isPlatformBrowser(this.platformId)) {
@@ -78,15 +77,33 @@ export class TerminalVelocity implements OnInit, OnDestroy {
     }
   }
 
+  goToMenu() {
+    this.gameState.set('MENU');
+    clearInterval(this.gameLoopId);
+  }
+
   stopGame() {
     clearInterval(this.gameLoopId);
-    if (!this.gameOver() && isPlatformBrowser(this.platformId)) {
+    if (this.gameState() === 'PLAYING' && isPlatformBrowser(this.platformId)) {
       this.endGame();
     }
   }
 
   spawnWord() {
-    const text = this.wordsList[Math.floor(Math.random() * this.wordsList.length)];
+    const difficulty = this.currentDifficulty();
+    const list = this.wordsLists[difficulty];
+    const text = list[Math.floor(Math.random() * list.length)];
+
+    let baseSpeed = 0.1;
+    let speedVariance = 0.2;
+    if (difficulty === 'EASY') {
+      baseSpeed = 0.05;
+      speedVariance = 0.1;
+    } else if (difficulty === 'HARD') {
+      baseSpeed = 0.2;
+      speedVariance = 0.3;
+    }
+
     this.words.update((w) => [
       ...w,
       {
@@ -94,13 +111,13 @@ export class TerminalVelocity implements OnInit, OnDestroy {
         text,
         x: Math.random() * 80 + 10,
         y: 0,
-        speed: 0.1 + Math.random() * 0.2,
+        speed: baseSpeed + Math.random() * speedVariance,
       },
     ]);
   }
 
   gameLoop() {
-    if (this.gameOver()) return;
+    if (this.gameState() !== 'PLAYING') return;
 
     this.words.update((currentWords) => {
       let isOver = false;
@@ -118,14 +135,18 @@ export class TerminalVelocity implements OnInit, OnDestroy {
       return newWords;
     });
 
-    if (!this.gameOver() && Math.random() < 0.02) {
-      this.spawnWord();
+    if (this.gameState() === 'PLAYING') {
+      const difficulty = this.currentDifficulty();
+      const spawnRate = difficulty === 'EASY' ? 0.015 : difficulty === 'HARD' ? 0.03 : 0.02;
+      if (Math.random() < spawnRate) {
+        this.spawnWord();
+      }
     }
   }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if (this.gameOver()) return;
+    if (this.gameState() !== 'PLAYING') return;
 
     if (event.ctrlKey || event.metaKey || event.altKey) return;
 
@@ -135,7 +156,7 @@ export class TerminalVelocity implements OnInit, OnDestroy {
     }
 
     if (event.key.length === 1) {
-      this.currentInput.update((val) => val + event.key);
+      this.currentInput.update((val) => val + event.key.toLowerCase());
       this.totalKeystrokes++;
 
       const input = this.currentInput();
@@ -143,7 +164,9 @@ export class TerminalVelocity implements OnInit, OnDestroy {
 
       if (matchIndex !== -1) {
         this.correctKeystrokes += input.length;
-        this.score.update((s) => s + this.words()[matchIndex].text.length * 10);
+        const difficulty = this.currentDifficulty();
+        const multiplier = difficulty === 'EASY' ? 10 : difficulty === 'HARD' ? 20 : 15;
+        this.score.update((s) => s + this.words()[matchIndex].text.length * multiplier);
         this.words.update((w) => {
           const arr = [...w];
           arr.splice(matchIndex, 1);
@@ -153,6 +176,11 @@ export class TerminalVelocity implements OnInit, OnDestroy {
       } else {
         const isPrefix = this.words().some((w) => w.text.startsWith(input));
         if (!isPrefix) {
+          // Apply penalty for incorrect typing
+          const difficulty = this.currentDifficulty();
+          const penalty = difficulty === 'EASY' ? 5 : difficulty === 'HARD' ? 15 : 10;
+          this.score.update((s) => s - penalty);
+
           this.currentInput.set('');
         }
       }
@@ -160,7 +188,7 @@ export class TerminalVelocity implements OnInit, OnDestroy {
   }
 
   async endGame() {
-    this.gameOver.set(true);
+    this.gameState.set('GAMEOVER');
     clearInterval(this.gameLoopId);
 
     const durationMs = Date.now() - this.startTime;
