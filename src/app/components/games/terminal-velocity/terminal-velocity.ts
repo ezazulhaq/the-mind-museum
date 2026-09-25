@@ -11,8 +11,9 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 import { PlayerStateService } from '../../../services/player-state.service';
+
+import { GameLayout } from '../../game-layout/game-layout';
 
 interface Word {
   id: number;
@@ -25,7 +26,7 @@ interface Word {
 @Component({
   selector: 'app-terminal-velocity',
   standalone: true,
-  imports: [RouterModule],
+  imports: [GameLayout],
   templateUrl: './terminal-velocity.html',
   styleUrl: './terminal-velocity.css',
 })

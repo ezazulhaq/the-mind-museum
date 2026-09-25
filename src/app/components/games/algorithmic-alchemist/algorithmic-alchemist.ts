@@ -8,7 +8,6 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import {
   DragDropModule,
   CdkDragDrop,
@@ -23,10 +22,12 @@ interface Command {
   label: string;
 }
 
+import { GameLayout } from '../../game-layout/game-layout';
+
 @Component({
   selector: 'app-algorithmic-alchemist',
   standalone: true,
-  imports: [DragDropModule, RouterModule],
+  imports: [DragDropModule, GameLayout],
   templateUrl: './algorithmic-alchemist.html',
   styleUrl: './algorithmic-alchemist.css',
 })

@@ -9,12 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
+import { GameLayout } from '../../game-layout/game-layout';
 
 @Component({
   selector: 'app-optic-architect',
   standalone: true,
-  imports: [RouterLink],
+  imports: [GameLayout],
   templateUrl: './optic-architect.html',
   styleUrl: './optic-architect.css',
 })

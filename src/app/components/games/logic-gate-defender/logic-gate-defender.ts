@@ -8,14 +8,15 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PlayerStateService } from '../../../services/player-state.service';
+
+import { GameLayout } from '../../game-layout/game-layout';
 
 @Component({
   selector: 'app-logic-gate-defender',
   standalone: true,
-  imports: [RouterLink],
+  imports: [GameLayout],
   templateUrl: './logic-gate-defender.html',
   styleUrl: './logic-gate-defender.css',
 })

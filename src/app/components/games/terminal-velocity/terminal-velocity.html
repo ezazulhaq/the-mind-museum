@@ -1,75 +1,101 @@
-<div
-  class="fixed inset-4 md:inset-8 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col z-40">
-  <!-- Dynamic Background Glow for Games -->
-  <div
-    class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
-    style="animation-duration: 8s"></div>
-  <div
-    class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse"
-    style="animation-duration: 12s"></div>
-
-  <!-- Floating Back Button (Top Left) -->
-  <button routerLink="/dashboard"
-    class="absolute top-6 left-6 z-50 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform"
-      fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-    </svg>
-  </button>
-
-  <!-- Floating Score (Top Right) -->
-  <div
-    class="absolute top-6 right-6 z-50 text-cyan-300 font-bold text-xl px-6 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner">
-    <span>Score: {{ score() }}</span>
-  </div>
-
-  @if (gameState() === 'MENU') {
-  <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+<app-game-layout>
+  <div game-area class="w-full h-full relative overflow-hidden flex flex-col">
+    <!-- Dynamic Background Glow for Games -->
     <div
-      class="bg-slate-900/80 border border-slate-700/50 p-12 rounded-3xl text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
-      <h2
-        class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 mb-8 tracking-tighter">
-        Select Difficulty</h2>
-      <div class="flex flex-col gap-4">
-        <button
-          class="bg-emerald-600/20 border border-emerald-500/50 hover:bg-emerald-500/30 text-emerald-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
-          (click)="startGame('EASY')">EASY</button>
-        <button
-          class="bg-amber-600/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]"
-          (click)="startGame('MEDIUM')">MEDIUM</button>
-        <button
-          class="bg-rose-600/20 border border-rose-500/50 hover:bg-rose-500/30 text-rose-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(225,29,72,0.2)] hover:shadow-[0_0_25px_rgba(225,29,72,0.4)]"
-          (click)="startGame('HARD')">HARD</button>
+      class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
+      style="animation-duration: 8s"></div>
+    <div
+      class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[100px] pointer-events-none animate-pulse"
+      style="animation-duration: 12s"></div>
+
+    <!-- Floating Score (Top Center) -->
+    <div
+      class="absolute top-6 left-1/2 -translate-x-1/2 z-50 text-cyan-300 font-bold text-xl px-6 py-3 bg-slate-950/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner">
+      <span>Score: {{ score() }}</span>
+    </div>
+
+    @if (gameState() === 'MENU') {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+      <div
+        class="bg-slate-900/80 border border-slate-700/50 p-12 rounded-3xl text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+        <h2
+          class="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-indigo-400 mb-8 tracking-tighter">
+          Select Difficulty</h2>
+        <div class="flex flex-col gap-4">
+          <button
+            class="bg-emerald-600/20 border border-emerald-500/50 hover:bg-emerald-500/30 text-emerald-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
+            (click)="startGame('EASY')">EASY</button>
+          <button
+            class="bg-amber-600/20 border border-amber-500/50 hover:bg-amber-500/30 text-amber-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(245,158,11,0.2)] hover:shadow-[0_0_25px_rgba(245,158,11,0.4)]"
+            (click)="startGame('MEDIUM')">MEDIUM</button>
+          <button
+            class="bg-rose-600/20 border border-rose-500/50 hover:bg-rose-500/30 text-rose-400 font-bold py-4 px-12 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(225,29,72,0.2)] hover:shadow-[0_0_25px_rgba(225,29,72,0.4)]"
+            (click)="startGame('HARD')">HARD</button>
+        </div>
       </div>
     </div>
-  </div>
-  }
+    }
 
-  @if (gameState() === 'PLAYING') {
-  <div class="relative z-10 flex-1 w-full h-full">
-    @for (word of words(); track trackByFn($index, word)) {
-    <div
-      class="falling-word absolute font-mono text-2xl font-bold transition-all duration-75 linear drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
-      [style.left.%]="word.x" [style.top.%]="word.y"
-      [class.matched]="word.text.startsWith(currentInput()) && currentInput().length > 0">
-      @if (word.text.startsWith(currentInput()) && currentInput().length > 0) {
-      <span class="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">{{
-        getTypedPart(word.text)
-        }}</span>
+    @if (gameState() === 'PLAYING') {
+    <div class="relative z-10 w-full h-full">
+      @for (word of words(); track trackByFn($index, word)) {
+      <div
+        class="falling-word absolute font-mono text-2xl font-bold transition-all duration-75 linear drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
+        [style.left.%]="word.x" [style.top.%]="word.y"
+        [class.matched]="word.text.startsWith(currentInput()) && currentInput().length > 0">
+        @if (word.text.startsWith(currentInput()) && currentInput().length > 0) {
+        <span class="text-emerald-400 drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">{{
+          getTypedPart(word.text)
+          }}</span>
+        }
+        <span class="text-slate-400" [class.text-cyan-400]="
+                word.text.startsWith(currentInput()) && currentInput().length > 0
+              ">{{ getUntypedPart(word.text) }}</span>
+      </div>
       }
-      <span class="text-slate-400" [class.text-cyan-400]="
-              word.text.startsWith(currentInput()) && currentInput().length > 0
-            ">{{ getUntypedPart(word.text) }}</span>
+      <div
+        class="absolute bottom-6 left-6 font-mono text-3xl font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+        > {{ currentInput() }}<span class="cursor animate-[blink_1s_infinite] opacity-100">_</span>
+      </div>
     </div>
     }
-    <div
-      class="absolute bottom-6 left-6 font-mono text-3xl font-bold text-emerald-400 bg-slate-950/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-emerald-900/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-      > {{ currentInput() }}<span class="cursor animate-[blink_1s_infinite] opacity-100">_</span>
+
+    @if (gameState() === 'GAMEOVER') {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+      <div
+        class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)]">
+        <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">GAME OVER</h2>
+        <p class="text-2xl text-slate-300 mb-8 font-mono">
+          Final Score: <span class="text-white font-bold">{{ score() }}</span>
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button
+            class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg"
+            (click)="goToMenu()">
+            Change Level
+          </button>
+          <button
+            class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(225,29,72,0.4)]"
+            (click)="startGame(currentDifficulty())">
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div control-panel class="w-full h-full flex flex-col pt-8 lg:pt-0 justify-center">
+    <!-- Info Header -->
+    <div class="mb-8">
+      <h3 class="text-2xl font-bold text-white mb-2 tracking-tighter">Terminal Velocity</h3>
+      <p class="text-slate-400 text-sm">Type the falling words before they hit the ground. Place your fingers on the
+        resting positions (dots) and type efficiently.</p>
     </div>
 
-    <!-- Animated Virtual Keyboard (Bottom Right) -->
+    <!-- Animated Virtual Keyboard (Now properly in the side panel) -->
     <div id="keyboard-container"
-      class="absolute bottom-6 right-6 z-50 flex flex-col gap-2 p-4 bg-slate-950/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl overflow-visible">
+      class="flex flex-col gap-2 p-4 bg-slate-950/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl relative w-full overflow-hidden self-center">
       @for (row of keyboardRows; track $index) {
       <div class="flex justify-center gap-1.5 sm:gap-2">
         @for (key of row; track key) {
@@ -103,29 +129,4 @@
       }
     </div>
   </div>
-  }
-
-  @if (gameState() === 'GAMEOVER') {
-  <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
-    <div
-      class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)]">
-      <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">GAME OVER</h2>
-      <p class="text-2xl text-slate-300 mb-8 font-mono">
-        Final Score: <span class="text-white font-bold">{{ score() }}</span>
-      </p>
-      <div class="flex flex-col sm:flex-row justify-center gap-4">
-        <button
-          class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg"
-          (click)="goToMenu()">
-          Change Level
-        </button>
-        <button
-          class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(225,29,72,0.5)]"
-          (click)="startGame()">
-          Restart
-        </button>
-      </div>
-    </div>
-  </div>
-  }
-</div>
+</app-game-layout>

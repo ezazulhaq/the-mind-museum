@@ -2,6 +2,8 @@
 
 This document outlines the six interactive games (exhibits) available in **The Mind Museum**. Each game is built as a standalone Angular component and utilizes different specialized libraries (Phaser, Three.js, CDK Drag-Drop) to deliver unique educational and puzzle-solving experiences.
 
+**Global Layout Architecture:** All games now utilize a unified split-screen `<app-game-layout>` wrapper. This ensures a consistent user experience by providing an immersive, full-height game area on the left and a dedicated, 450px wide collapsible control panel on the right (which houses game-specific instructions, controls, drag-and-drop toolboxes, or virtual keyboards). On mobile devices, this control panel automatically collapses into a drawer accessible via a hamburger menu in the top right.
+
 ---
 
 ## 1. Terminal Velocity
@@ -16,7 +18,7 @@ A fast-paced typing game designed to test a player's typing speed and accuracy.
 - The player must type the words exactly as they appear in the terminal prompt at the bottom of the screen.
 - Successfully typing a word destroys it before it hits the bottom and grants points, with score multipliers scaling by difficulty (10x, 15x, 20x per character).
 - **Penalty System:** Typing an incorrect character (one that does not match the prefix of any falling word) clears the current input and deducts points based on difficulty (-5 Easy, -10 Medium, -15 Hard).
-- **Interactive Virtual Keyboard:** An animated, color-coded virtual keyboard sits in the bottom corner during gameplay. It tracks physical keystrokes in real-time and uses glowing fingertips to teach players standard touch-typing finger placements.
+- **Interactive Virtual Keyboard:** An animated, color-coded virtual keyboard is hosted within the right control panel. It tracks physical keystrokes in real-time, highlights pressed keys, and features glowing "ghost fingertips" that dynamically move to guide players on proper touch-typing finger placements across the home row and beyond.
 - The game tracks and logs telemetry metrics such as **Words Per Minute (WPM)**, **Accuracy (%)**, and total score.
 - The game ends when a word hits the bottom of the screen ("Game Over"), providing an option to restart or change the difficulty level.
 

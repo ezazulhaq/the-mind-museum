@@ -8,12 +8,13 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
+import { GameLayout } from '../../game-layout/game-layout';
 
 @Component({
   selector: 'app-node-network',
   standalone: true,
-  imports: [RouterLink],
+  imports: [GameLayout],
   templateUrl: './node-network.html',
   styleUrl: './node-network.css',
 })

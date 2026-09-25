@@ -1,0 +1,64 @@
+<div class="fixed inset-4 md:inset-8 flex gap-4 md:gap-6 z-40">
+    <!-- Game Area (Left) -->
+    <div
+        class="flex-1 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl overflow-hidden relative shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+
+        <!-- Floating Back Button (Top Left) -->
+        <button routerLink="/dashboard"
+            class="absolute top-6 left-6 z-60 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110 hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] group">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 transform group-hover:-translate-x-1 transition-transform" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+
+        <!-- Mobile Hamburger Toggle (Top Right) -->
+        <button (click)="togglePanel()"
+            class="xl:hidden absolute top-6 right-6 z-60 p-3 bg-slate-800/80 hover:bg-slate-700 text-cyan-400 rounded-full border border-slate-600 shadow-[0_0_15px_rgba(34,211,238,0.2)] transition-all duration-300 hover:scale-110">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <!-- The actual game canvas/content -->
+        <ng-content select="[game-area]"></ng-content>
+    </div>
+
+    <!-- Control Panel (Right) - Visible on XL screens -->
+    <div
+        class="hidden xl:flex w-112.5 shrink-0 bg-slate-900/40 backdrop-blur-xl border border-slate-700/40 rounded-3xl flex-col shadow-[0_8px_32px_rgba(0,0,0,0.4)] relative overflow-hidden">
+        <ng-container *ngTemplateOutlet="panelContent"></ng-container>
+    </div>
+
+    <!-- Mobile Drawer Overlay (Hidden on XL) -->
+    @if (mobilePanelOpen()) {
+    <div class="xl:hidden fixed inset-0 z-70 bg-slate-950/80 backdrop-blur-sm transition-opacity duration-300"
+        (click)="togglePanel()"></div>
+    <div
+        class="xl:hidden fixed top-0 right-0 bottom-0 w-[90vw] sm:w-112.5 bg-slate-900 border-l border-slate-700/50 z-80 flex flex-col transform transition-transform duration-300 shadow-[-10px_0_30px_rgba(0,0,0,0.5)]">
+        <div
+            class="p-4 flex justify-end bg-slate-900/80 backdrop-blur-md border-b border-slate-800 absolute top-0 w-full z-10">
+            <button (click)="togglePanel()"
+                class="p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="pt-16 h-full flex flex-col overflow-y-auto">
+            <ng-container *ngTemplateOutlet="panelContent"></ng-container>
+        </div>
+    </div>
+    }
+</div>
+
+<!-- Shared Panel Content Template -->
+<ng-template #panelContent>
+    <div class="flex-1 overflow-y-auto p-6 flex flex-col relative">
+        <ng-content select="[control-panel]"></ng-content>
+    </div>
+</ng-template>

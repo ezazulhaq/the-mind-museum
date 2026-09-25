@@ -8,12 +8,13 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
+
+import { GameLayout } from '../../game-layout/game-layout';
 
 @Component({
   selector: 'app-contraption-crafter',
   standalone: true,
-  imports: [RouterLink],
+  imports: [GameLayout],
   templateUrl: './contraption-crafter.html',
   styleUrl: './contraption-crafter.css',
 })
