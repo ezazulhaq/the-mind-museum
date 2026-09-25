@@ -6,25 +6,148 @@
       class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
       style="animation-duration: 8s;"></div>
 
+    <!-- UI Overlay for Stats -->
+    @if (gameState() !== 'MENU') {
+    <div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
+      <div
+        class="px-6 py-3 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner text-center">
+        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Level</p>
+        <p class="text-white font-mono text-xl">{{ currentLevelIndex() + 1 }}</p>
+      </div>
+      <div
+        class="px-6 py-3 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner text-center">
+        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Moves / Optimal</p>
+        <p class="text-cyan-400 font-mono text-xl">{{ moves() }} <span class="text-slate-500 text-lg">/ {{
+            optimalMoves() }}</span></p>
+      </div>
+    </div>
+    }
+
+    <!-- Phaser Canvas Container -->
     <div class="relative z-10 flex-1 w-full h-full flex justify-center items-center overflow-hidden" #gameContainer>
     </div>
+
+    <!-- Main Menu Overlay -->
+    @if (gameState() === 'MENU') {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+      <div
+        class="bg-slate-900/80 border border-slate-700/50 p-8 rounded-3xl text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl w-full max-w-2xl mx-4">
+        <h2
+          class="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-indigo-400 mb-8 tracking-tighter">
+          Select Level
+        </h2>
+        <div class="grid grid-cols-5 gap-4">
+          @for (level of levels; track level.id) {
+          <button
+            class="aspect-square flex flex-col items-center justify-center bg-slate-800/60 border border-slate-600/50 hover:bg-slate-700/60 hover:border-cyan-500/50 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] group"
+            (click)="startGame($index)">
+            <span class="text-2xl font-bold text-slate-300 group-hover:text-white">{{ level.id }}</span>
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Level Complete Overlay -->
+    @if (gameState() === 'LEVEL_COMPLETE') {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+      <div
+        class="bg-slate-900 border border-emerald-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(16,185,129,0.2)] max-w-md w-full mx-4">
+        <h2 class="text-4xl font-extrabold text-emerald-400 mb-6 tracking-tighter">SUCCESS!</h2>
+
+        <div class="flex justify-center gap-2 mb-8">
+          @for (star of [1,2,3]; track star) {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 transition-all duration-500"
+            [class.text-amber-400]="star <= stars()" [class.text-slate-700]="star > stars()"
+            [class.scale-110]="star <= stars()" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          }
+        </div>
+
+        <p class="text-slate-300 mb-8 font-mono">
+          Completed in <span class="text-white font-bold">{{ moves() }}</span> moves.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
+            (click)="goToMenu()">
+            Menu
+          </button>
+          @if (currentLevelIndex() < levels.length - 1) { <button
+            class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+            (click)="nextLevel()">
+            Next Level
+            </button>
+            }
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Game Over Overlay -->
+    @if (gameState() === 'GAMEOVER') {
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+      <div
+        class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)] max-w-md w-full mx-4">
+        <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">SYSTEM FAILURE</h2>
+        <p class="text-lg text-slate-300 mb-8 font-mono">
+          Connection timed out. Too many routing hops taken.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <button class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
+            (click)="goToMenu()">
+            Menu
+          </button>
+          <button
+            class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(225,29,72,0.4)]"
+            (click)="restartLevel()">
+            Retry Route
+          </button>
+        </div>
+      </div>
+    </div>
+    }
   </div>
 
-  <div control-panel class="w-full h-full flex flex-col justify-center">
-    <h2 class="text-2xl font-bold text-white tracking-tighter mb-4">Node Network</h2>
-    <p class="text-slate-400 text-sm mb-6">Connect data nodes efficiently without crossing paths to solve the network
-      routing puzzles.</p>
-
-    <!-- Additional controls can go here later -->
-    <div
-      class="flex-1 bg-slate-900/40 rounded-xl border border-slate-700/50 p-6 flex flex-col items-center justify-center text-center shadow-inner">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-500 mb-4" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-      </svg>
-      <h3 class="text-slate-300 font-bold mb-2">Controls</h3>
-      <p class="text-slate-500 text-sm">Click and drag from one node to another to create a connection.</p>
+  <div control-panel class="w-full h-full flex flex-col justify-center gap-6">
+    <div>
+      <h2 class="text-3xl font-extrabold text-white tracking-tighter mb-2">Node Network</h2>
+      <p class="text-slate-400 text-sm">
+        Connect data nodes efficiently without crossing paths to solve the network routing puzzles. Navigate the packet
+        from the blue source to the green destination.
+      </p>
     </div>
+
+    <div class="bg-slate-900/60 rounded-2xl border border-slate-700/50 p-6 shadow-inner">
+      <h3 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Data Flow Protocol
+      </h3>
+      <ul class="space-y-3 text-sm text-slate-300">
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-500 font-bold mt-0.5">•</span>
+          Click adjacent connected nodes to route your packet.
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-500 font-bold mt-0.5">•</span>
+          Finding the absolute shortest path grants 3 stars.
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-rose-400 font-bold mt-0.5">•</span>
+          Taking too many unnecessary detours will cause the connection to time out!
+        </li>
+      </ul>
+    </div>
+
+    @if (gameState() !== 'MENU') {
+    <button
+      class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl border border-slate-600 transition-colors"
+      (click)="goToMenu()">
+      Back to Level Select
+    </button>
+    }
   </div>
 </app-game-layout>

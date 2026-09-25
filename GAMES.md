@@ -80,11 +80,13 @@ A physics-based sandbox puzzle game where players build Rube Goldberg-style mach
 **Tech Stack:** Angular + Phaser 4
 
 **Functionality:**
-A graph-based pathfinding and routing puzzle.
-- The player controls a "data packet" located on a starting node within a complex network of interconnected nodes.
-- The goal is to navigate the packet across the valid connecting lines (edges) to reach a target destination node.
-- The player clicks on adjacent nodes to move the packet.
-- Movement is constrained by a maximum move limit (`maxMoves`), requiring the player to find the most efficient path (shortest path) through the network graph.
+A graph-based pathfinding and routing puzzle featuring a "Cyberpunk Data Flow" visual theme.
+- The game consists of **10 hand-crafted levels** escalating in difficulty.
+- The player controls a "data packet" located on a blue starting node within a complex network of interconnected nodes.
+- The goal is to navigate the packet across the valid connecting lines (edges) to reach a green target destination node.
+- The player clicks on adjacent valid nodes to move the packet, triggering dynamic digital ripples and glowing path highlights.
+- **Scoring System (3-Stars):** Players are awarded up to 3 stars per level based on their efficiency. Finding the absolute optimal (shortest) path yields 3 stars, while taking slight detours yields fewer stars.
+- **Failure State:** If the packet exceeds a strict maximum move limit (absolute fail limit), the connection times out and the player must restart the level.
 
 ---
 
