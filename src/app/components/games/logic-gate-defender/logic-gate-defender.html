@@ -10,22 +10,34 @@
     </div>
   </div>
 
-  <div control-panel class="w-full h-full flex flex-col justify-center">
-    <h2 class="text-2xl font-bold text-white tracking-tighter mb-4">Logic Gate Defender</h2>
-    <p class="text-slate-400 text-sm mb-6">Build logic gates (AND, OR, NOT) to defend your base against incoming
-      signals.
-      Use the in-game tools to place gates and wire them up before the signals reach your core.</p>
+  <div control-panel class="w-full h-full flex flex-col max-h-[85vh]">
+    <h2 class="text-2xl font-bold text-white tracking-tighter mb-4 mt-8">Logic Gate Defender</h2>
+    <p class="text-slate-400 text-sm mb-6">Defend your base against incoming signals using boolean logic! Each enemy
+      carries two true/false signals.</p>
 
-    <!-- Additional controls can go here later -->
     <div
-      class="flex-1 bg-slate-900/40 rounded-xl border border-slate-700/50 p-6 flex flex-col items-center justify-center text-center shadow-inner">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-500 mb-4" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-      </svg>
-      <h3 class="text-slate-300 font-bold mb-2">Controls</h3>
-      <p class="text-slate-500 text-sm">Use the on-screen game UI to select and place logic gates.</p>
+      class="flex-1 bg-slate-900/40 rounded-xl border border-slate-700/50 p-6 flex flex-col text-left shadow-inner overflow-y-auto space-y-4">
+      <h3 class="text-slate-300 font-bold border-b border-slate-700/50 pb-2">How to Play</h3>
+      <ol class="text-slate-400 text-sm list-decimal list-inside space-y-2">
+        <li><strong>Select a Gate:</strong> Click a logic gate button at the bottom (e.g. AND).</li>
+        <li><strong>Place it:</strong> Click on a grey "SLOT" in the path to spend Bits and build the gate.</li>
+        <li><strong>Defend:</strong> Gates evaluate enemy signals and destroy them if the logic rule is satisfied.</li>
+      </ol>
+
+      <h3 class="text-slate-300 font-bold border-b border-slate-700/50 pb-2 mt-4">Gate Rules</h3>
+      <ul class="text-slate-400 text-sm list-disc list-inside space-y-1">
+        <li><span class="text-cyan-400 font-mono">AND:</span> Destroys if both are True (TT)</li>
+        <li><span class="text-cyan-400 font-mono">OR:</span> Destroys if at least one is True</li>
+        <li><span class="text-cyan-400 font-mono">NOR:</span> Destroys if both are False (FF)</li>
+        <li><span class="text-cyan-400 font-mono">XOR:</span> Destroys if signals are different</li>
+        <li><span class="text-cyan-400 font-mono">NAND:</span> Destroys unless both are True</li>
+      </ul>
+
+      <div class="mt-4 p-3 bg-red-900/20 border border-red-900/50 rounded-lg">
+        <h4 class="text-red-400 text-sm font-bold mb-1">⚠️ Overheating Warning</h4>
+        <p class="text-slate-400 text-xs">Gates have a durability of 3 uses! After destroying 3 enemies, a gate will
+          break and you must build a new one.</p>
+      </div>
     </div>
   </div>
 </app-game-layout>
