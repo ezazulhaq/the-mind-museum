@@ -50,12 +50,16 @@ A visual drag-and-drop programming puzzle that teaches basic algorithmic logic a
 A Tower Defense game that teaches boolean logic and digital circuitry.
 - Enemies spawn and move along a path towards the player's Base.
 - Each enemy carries two boolean signals (e.g., True/True, True/False, False/False).
-- The player must defend the base by placing specific **Logic Gates (AND, OR, NOT)** into tower slots along the path.
+- The player must defend the base by placing specific **Logic Gates (AND, OR, NOR, XOR, NAND)** into tower slots along the path.
+- **Economy System:** Placing gates costs "Bits" (20-30 Bits depending on the gate). Destroying enemies rewards Bits (+10 Bits). The player starts with 100 Bits.
+- **Overheating Mechanics:** Gates have limited durability (3 uses). After destroying 3 enemies, the gate overheats, breaks, and must be replaced.
 - When an enemy passes a gate, its signals are evaluated by that gate's logic rule:
   - `AND` gate destroys the enemy if signals are True/True.
   - `OR` gate destroys the enemy if at least one signal is True.
-  - `NOT` gate destroys the enemy if both signals are False.
-- If an enemy bypasses the gates, it damages the Base. The player must survive multiple waves.
+  - `NOR` gate destroys the enemy if both signals are False.
+  - `XOR` gate destroys the enemy if the signals are different (True/False or False/True).
+  - `NAND` gate destroys the enemy unless the signals are True/True.
+- If an enemy bypasses the gates, it damages the Base. The player must survive escalating waves of enemies.
 
 ---
 
