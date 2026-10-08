@@ -76,7 +76,10 @@
               "buildTarget": "mind-museum:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "allowedHosts": ["mindmuseum.chotabuziness.com"]
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"

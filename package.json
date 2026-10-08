@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "dev": "ng serve --host 0.0.0.0",
     "start:prod": "node dist/mind-museum/server/server.mjs",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
