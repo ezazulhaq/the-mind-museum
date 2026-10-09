@@ -78,7 +78,7 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "allowedHosts": ["mindmuseum.chotabuziness.com"]
+            "allowedHosts": ["mindmuseum-dev.chotabuziness.com"]
           }
         },
         "test": {
