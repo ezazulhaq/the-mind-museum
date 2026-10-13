@@ -33,9 +33,6 @@
             "styles": ["src/styles.css"],
             "server": "src/main.server.ts",
             "outputMode": "server",
-            "security": {
-              "allowedHosts": ["localhost", "127.0.0.1"]
-            },
             "ssr": {
               "entry": "src/server.ts"
             },
@@ -78,7 +75,9 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "allowedHosts": ["mindmuseum-dev.chotabuziness.com"]
+            "port": 3000,
+            "host": "0.0.0.0",
+            "allowedHosts": true
           }
         },
         "test": {

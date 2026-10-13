@@ -1,0 +1,6 @@
+{
+  "name": "The Mind Museum",
+  "description": "An interactive STEM museum featuring hands-on exhibits in computer science, physics, optics, and logic.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
