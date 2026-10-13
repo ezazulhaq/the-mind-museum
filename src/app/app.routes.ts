@@ -9,11 +9,13 @@ import { LogicGateDefender } from './components/games/logic-gate-defender/logic-
 import { ContraptionCrafter } from './components/games/contraption-crafter/contraption-crafter';
 import { OpticArchitect } from './components/games/optic-architect/optic-architect';
 import { AnalyticsDashboard } from './components/analytics-dashboard/analytics-dashboard';
+import { Exhibits } from './components/exhibits/exhibits';
 
 export const routes: Routes = [
   { path: '', component: Lobby },
   { path: 'profile', component: ProfileSelector },
   { path: 'dashboard', component: GameDashboard },
+  { path: 'exhibits', component: Exhibits },
   { path: 'analytics', component: AnalyticsDashboard },
   { path: 'games/terminal-velocity', component: TerminalVelocity },
   { path: 'games/node-network', component: NodeNetwork },
