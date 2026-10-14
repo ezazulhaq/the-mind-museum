@@ -1,54 +1,69 @@
 <div
-  class="min-h-screen bg-slate-950 text-slate-200 p-6 md:p-10 pt-20 md:pt-10 relative overflow-hidden font-sans selection:bg-cyan-500/30">
+  class="min-h-screen bg-slate-950 text-slate-200 p-4 sm:p-6 md:p-10 pt-20 md:pt-10 relative overflow-hidden font-sans selection:bg-cyan-500/30">
 
   <!-- Home / Back Navigation FAB -->
   <button routerLink="/dashboard" title="Return to Dashboard"
-    class="absolute top-6 left-6 z-50 w-12 h-12 flex items-center justify-center bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/25 group">
+    class="absolute top-6 left-6 z-50 w-12 h-12 flex items-center justify-center bg-slate-900/90 backdrop-blur-xl border border-slate-700/60 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 hover:scale-105 hover:border-cyan-400 hover:shadow-cyan-500/30 group cursor-pointer">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-300 group-hover:text-cyan-400 transition-colors"
       fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
         d="M10 19l-7-7m0 0l7-7m-7 7h18" />
     </svg>
   </button>
 
-  <!-- Animated Background Glows -->
+  <!-- Dynamic Glowing Background Gradients -->
   <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
     <div
-      class="absolute top-[-15%] left-[-10%] w-[55vw] h-[55vw] rounded-full bg-cyan-900/15 blur-[120px] animate-pulse"
+      class="absolute top-[-15%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-cyan-900/20 blur-[140px] animate-pulse"
       style="animation-duration: 9s"></div>
     <div
-      class="absolute bottom-[-15%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/15 blur-[120px] animate-pulse"
+      class="absolute bottom-[-15%] right-[-10%] w-[55vw] h-[55vw] rounded-full bg-indigo-900/20 blur-[140px] animate-pulse"
       style="animation-duration: 11s"></div>
     <div
-      class="absolute top-[35%] left-[45%] w-[35vw] h-[35vw] rounded-full bg-fuchsia-900/10 blur-[110px] animate-pulse"
+      class="absolute top-[35%] left-[40%] w-[35vw] h-[35vw] rounded-full bg-fuchsia-900/10 blur-[120px] animate-pulse"
       style="animation-duration: 13s"></div>
+    <!-- Fine Grid Backdrop Pattern -->
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:32px_32px]"></div>
   </div>
 
   <div class="relative z-10 max-w-7xl mx-auto">
     <!-- Header Section -->
     <header
-      class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 bg-slate-900/40 backdrop-blur-xl p-8 rounded-3xl border border-slate-700/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+      class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6 bg-slate-900/40 backdrop-blur-xl p-6 sm:p-8 rounded-3xl border border-slate-700/50 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
       <div>
-        <div class="inline-block mb-2">
+        <div class="flex items-center gap-2 mb-3">
           <span
-            class="px-3.5 py-1 rounded-full bg-cyan-950/80 border border-cyan-800 text-cyan-400 text-xs font-semibold tracking-widest uppercase shadow-[0_0_12px_rgba(34,211,238,0.2)]">
+            class="px-3 py-1 rounded-full bg-cyan-950/90 border border-cyan-700/70 text-cyan-300 text-xs font-bold tracking-widest uppercase shadow-[0_0_15px_rgba(34,211,238,0.25)] flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
             Permanent Collection
           </span>
+          <span class="text-xs text-slate-400 font-mono">6 Active Installations</span>
         </div>
         <h1
-          class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 tracking-tight">
+          class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 tracking-tight">
           Museum Exhibits
         </h1>
-        <p class="text-slate-400 text-base md:text-lg max-w-2xl mt-2 leading-relaxed">
-          Interactive installations exploring computer science, physics, logic, and mathematics.
+        <p class="text-slate-300 text-base sm:text-lg max-w-2xl mt-2 leading-relaxed">
+          Interactive hands-on installations designed to challenge, test, and elevate cognitive aptitude across STEM disciplines.
         </p>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-3">
+      <!-- Quick Action Navigation -->
+      <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+        <a routerLink="/dashboard"
+          class="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-slate-800/90 hover:bg-slate-700 text-slate-200 transition-all duration-200 font-semibold py-2.5 px-4 rounded-xl border border-slate-700 hover:border-slate-500 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          <span>Main Dashboard</span>
+        </a>
+
         <a routerLink="/analytics"
-          class="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-cyan-300 transition-all duration-300 font-semibold py-2.5 px-5 rounded-xl border border-slate-700 hover:border-cyan-400/50 shadow-md hover:scale-105">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+          class="flex-1 sm:flex-initial flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600/20 to-indigo-600/20 hover:from-cyan-600/30 hover:to-indigo-600/30 text-cyan-300 transition-all duration-200 font-semibold py-2.5 px-5 rounded-xl border border-cyan-500/40 hover:border-cyan-400 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -58,33 +73,34 @@
       </div>
     </header>
 
-    <!-- Filters and Search Toolbar -->
+    <!-- Filter & Search Controls -->
     <div
-      class="mb-8 p-6 bg-slate-900/30 backdrop-blur-lg border border-slate-800 rounded-2xl flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-      <!-- Wing Filter Pills -->
+      class="mb-8 p-5 bg-slate-900/50 backdrop-blur-md border border-slate-800/80 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 shadow-lg">
+      <!-- Wing Filter Buttons -->
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold mr-1">Wings:</span>
+        <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold mr-1 hidden sm:inline">Wings:</span>
         @for (wing of wings(); track wing) {
         <button type="button" (click)="setWing(wing)" [class.bg-cyan-500]="selectedWing() === wing"
-          [class.text-slate-950]="selectedWing() === wing" [class.font-bold]="selectedWing() === wing"
-          [class.bg-slate-800]="selectedWing() !== wing" [class.text-slate-300]="selectedWing() !== wing"
-          class="px-3.5 py-1.5 rounded-xl text-xs transition-all duration-200 border border-slate-700 hover:border-cyan-400/50 hover:scale-105 cursor-pointer">
+          [class.text-slate-950]="selectedWing() === wing" [class.font-extrabold]="selectedWing() === wing"
+          [class.shadow-[0_0_15px_rgba(6,182,212,0.4)]]="selectedWing() === wing"
+          [class.bg-slate-800/80]="selectedWing() !== wing" [class.text-slate-300]="selectedWing() !== wing"
+          class="px-3.5 py-1.5 rounded-xl text-xs transition-all duration-200 border border-slate-700 hover:border-cyan-400/60 cursor-pointer">
           {{ wing }}
         </button>
         }
       </div>
 
-      <!-- Search Input -->
-      <div class="relative w-full lg:w-72">
+      <!-- Search Field -->
+      <div class="relative w-full md:w-80">
         <svg xmlns="http://www.w3.org/2000/svg"
-          class="h-4 w-4 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"
+          class="h-4 w-4 absolute left-3.5 top-1/2 transform -translate-y-1/2 text-cyan-400 pointer-events-none"
           fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <input type="text" [value]="searchQuery()" (input)="onSearchChange($event)"
-          placeholder="Search exhibits..."
-          class="w-full pl-10 pr-4 py-2 bg-slate-950/70 border border-slate-700 focus:border-cyan-400 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden transition-colors" />
+          placeholder="Filter by title, skill, or discipline..."
+          class="w-full pl-10 pr-4 py-2 bg-slate-950/80 border border-slate-700/80 focus:border-cyan-400 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden transition-all focus:ring-1 focus:ring-cyan-400/40" />
       </div>
     </div>
 
@@ -92,68 +108,318 @@
     <div class="games-grid">
       @for (exhibit of filteredExhibits(); track exhibit.id) {
       <div
-        class="game-card flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(6,182,212,0.2)] hover:border-t-cyan-400">
+        class="game-card group transition-all duration-400 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(6,182,212,0.25)] hover:border-cyan-400/50 flex flex-col justify-between">
+
+        <!-- Top Animated Accent Line -->
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 opacity-60 group-hover:opacity-100 transition-opacity"></div>
+
         <div>
-          <!-- Card Header Badges -->
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="wing-badge">
-              {{ exhibit.wing }}
-            </span>
-            <span
-              class="text-[11px] font-semibold px-2 py-0.5 rounded-md border border-slate-700/80 bg-slate-950/60 text-slate-300">
-              {{ exhibit.level }}
-            </span>
+          <!-- EXHIBIT VISUAL PREVIEW ARTWORK -->
+          <div class="relative w-full h-44 bg-slate-950/80 border-b border-slate-800/80 overflow-hidden flex items-center justify-center p-4">
+
+            <!-- Terminal Velocity Illustration -->
+            @if (exhibit.previewType === 'terminal') {
+            <div class="w-full h-full flex flex-col justify-between font-mono text-xs relative">
+              <div class="flex items-center justify-between pb-2 border-b border-cyan-900/40">
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                </div>
+                <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">TTY // REALTIME</span>
+              </div>
+              <div class="space-y-1.5 py-1 text-slate-400">
+                <div class="flex items-center justify-between text-cyan-300">
+                  <span>&gt; stream::velocity</span>
+                  <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-[10px] text-cyan-300">85 WPM</span>
+                </div>
+                <div class="text-slate-500 text-[11px] truncate">&gt; falling_buffer: [ALGORITHM]</div>
+                <div class="text-emerald-400 text-[11px] flex items-center gap-1">
+                  <span>&gt; match_target: TRUE</span>
+                  <span class="w-1.5 h-3 bg-cyan-400 inline-block animate-pulse"></span>
+                </div>
+              </div>
+              <div class="h-1.5 w-full bg-slate-900 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 w-3/4 animate-pulse"></div>
+              </div>
+            </div>
+            }
+
+            <!-- Node Network Illustration -->
+            @if (exhibit.previewType === 'network') {
+            <div class="w-full h-full relative flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Connecting Edges -->
+                <line x1="40" y1="65" x2="110" y2="30" stroke="#059669" stroke-width="2" stroke-dasharray="4 2" />
+                <line x1="40" y1="65" x2="110" y2="100" stroke="#059669" stroke-width="2" />
+                <line x1="110" y1="30" x2="180" y2="65" stroke="#10b981" stroke-width="2.5" />
+                <line x1="110" y1="100" x2="180" y2="65" stroke="#047857" stroke-width="2" />
+                <line x1="180" y1="65" x2="240" y2="65" stroke="#34d399" stroke-width="3" />
+
+                <!-- Nodes -->
+                <circle cx="40" cy="65" r="14" fill="#064e3b" stroke="#34d399" stroke-width="2" />
+                <text x="40" y="69" text-anchor="middle" fill="#a7f3d0" font-size="9" font-family="monospace">START</text>
+
+                <circle cx="110" cy="30" r="11" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+                <circle cx="110" cy="100" r="11" fill="#0f172a" stroke="#059669" stroke-width="2" />
+
+                <circle cx="180" cy="65" r="12" fill="#065f46" stroke="#34d399" stroke-width="2" />
+                <circle cx="240" cy="65" r="15" fill="#047857" stroke="#6ee7b7" stroke-width="2.5" />
+                <text x="240" y="69" text-anchor="middle" fill="#ffffff" font-size="10" font-family="monospace" font-weight="bold">TARGET</text>
+
+                <!-- Data Packet Pulse -->
+                <circle cx="145" cy="47" r="4" fill="#a7f3d0" class="animate-ping" />
+              </svg>
+            </div>
+            }
+
+            <!-- Logic Gate Defender Illustration -->
+            @if (exhibit.previewType === 'circuit') {
+            <div class="w-full h-full relative flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Circuit Board Traces -->
+                <path d="M20 35 H70 V55 H100" stroke="#7c3aed" stroke-width="2" />
+                <path d="M20 95 H70 V75 H100" stroke="#7c3aed" stroke-width="2" />
+                <circle cx="20" cy="35" r="4" fill="#a78bfa" />
+                <text x="28" y="32" fill="#c4b5fd" font-size="9" font-family="monospace">SIG_A [1]</text>
+                <circle cx="20" cy="95" r="4" fill="#a78bfa" />
+                <text x="28" y="105" fill="#c4b5fd" font-size="9" font-family="monospace">SIG_B [1]</text>
+
+                <!-- Logic Gate Shape (AND Gate) -->
+                <rect x="100" y="45" width="45" height="40" rx="4" fill="#4c1d95" stroke="#a78bfa" stroke-width="2" />
+                <text x="122" y="68" text-anchor="middle" fill="#ffffff" font-size="11" font-family="monospace" font-weight="bold">AND</text>
+
+                <!-- Gate Output Line -->
+                <path d="M145 65 H200" stroke="#a78bfa" stroke-width="3" />
+                <circle cx="200" cy="65" r="14" fill="#5b21b6" stroke="#c4b5fd" stroke-width="2" />
+                <text x="200" y="69" text-anchor="middle" fill="#ffffff" font-size="10" font-family="monospace" font-weight="bold">FIRE</text>
+
+                <!-- Defended Core -->
+                <rect x="235" y="40" width="30" height="50" rx="6" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" />
+                <text x="250" y="69" text-anchor="middle" fill="#c7d2fe" font-size="8" font-family="monospace">CORE</text>
+              </svg>
+            </div>
+            }
+
+            <!-- Contraption Crafter Illustration -->
+            @if (exhibit.previewType === 'physics') {
+            <div class="w-full h-full relative flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Blueprint Grid -->
+                <line x1="20" y1="20" x2="260" y2="20" stroke="#78350f" stroke-width="1" stroke-dasharray="4 4" />
+                <line x1="20" y1="110" x2="260" y2="110" stroke="#78350f" stroke-width="1" stroke-dasharray="4 4" />
+
+                <!-- Dropping Ball -->
+                <circle cx="45" cy="30" r="9" fill="#f59e0b" stroke="#fef3c7" stroke-width="2" />
+
+                <!-- Trajectory Curve -->
+                <path d="M45 40 Q 55 70 85 75 T 160 85 T 235 90" stroke="#d97706" stroke-width="2" stroke-dasharray="4 2" />
+
+                <!-- Ramp Surface -->
+                <polygon points="65,95 130,85 130,105 65,105" fill="#b45309" stroke="#fcd34d" stroke-width="1.5" />
+                <text x="95" y="100" text-anchor="middle" fill="#fef3c7" font-size="8" font-family="monospace">RAMP</text>
+
+                <!-- Spring Bouncer -->
+                <circle cx="170" cy="95" r="10" fill="#78350f" stroke="#f59e0b" stroke-width="2" />
+                <text x="170" y="98" text-anchor="middle" fill="#fef3c7" font-size="8" font-weight="bold">SPRING</text>
+
+                <!-- Target Goal Bucket -->
+                <rect x="225" y="80" width="30" height="25" rx="3" fill="#92400e" stroke="#fbbf24" stroke-width="2" />
+                <text x="240" y="96" text-anchor="middle" fill="#ffffff" font-size="8" font-family="monospace" font-weight="bold">GOAL</text>
+              </svg>
+            </div>
+            }
+
+            <!-- Algorithmic Alchemist Illustration -->
+            @if (exhibit.previewType === 'alchemy') {
+            <div class="w-full h-full relative flex items-center justify-center">
+              <div class="w-full space-y-2 font-mono text-xs">
+                <div class="flex items-center gap-2 bg-fuchsia-950/70 border border-fuchsia-700/60 p-2 rounded-lg text-fuchsia-300">
+                  <span class="w-4 h-4 rounded bg-fuchsia-600 flex items-center justify-center text-[10px] text-white font-bold">1</span>
+                  <span>REPEAT [3x] &#123;</span>
+                </div>
+                <div class="flex items-center gap-2 ml-5 bg-purple-950/70 border border-purple-700/60 p-1.5 rounded-lg text-purple-200">
+                  <span class="w-3.5 h-3.5 rounded bg-purple-600 flex items-center justify-center text-[9px] text-white">2</span>
+                  <span>MOVE_FORWARD()</span>
+                </div>
+                <div class="flex items-center justify-between ml-5 bg-pink-950/70 border border-pink-700/60 p-1.5 rounded-lg text-pink-200">
+                  <span>IF [OBSTACLE] -&gt; TURN_RIGHT()</span>
+                  <span class="text-emerald-400 font-bold">&#10003; VALID</span>
+                </div>
+              </div>
+            </div>
+            }
+
+            <!-- Optic Architect Illustration -->
+            @if (exhibit.previewType === 'optic') {
+            <div class="w-full h-full relative flex items-center justify-center">
+              <svg class="w-full h-full" viewBox="0 0 280 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- 3D Gimbal Axis Indicators -->
+                <line x1="30" y1="30" x2="55" y2="30" stroke="#38bdf8" stroke-width="1.5" />
+                <text x="60" y="33" fill="#38bdf8" font-size="8" font-family="monospace">X</text>
+                <line x1="30" y1="30" x2="30" y2="10" stroke="#f43f5e" stroke-width="1.5" />
+                <text x="27" y="8" fill="#f43f5e" font-size="8" font-family="monospace">Y</text>
+                <line x1="30" y1="30" x2="15" y2="45" stroke="#34d399" stroke-width="1.5" />
+                <text x="10" y="52" fill="#34d399" font-size="8" font-family="monospace">Z</text>
+
+                <!-- Isometric 3D Cube Structure -->
+                <!-- Top Face -->
+                <polygon points="140,25 180,45 140,65 100,45" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+                <!-- Left Face -->
+                <polygon points="100,45 140,65 140,110 100,90" fill="#0369a1" stroke="#38bdf8" stroke-width="1.5" />
+                <!-- Right Face -->
+                <polygon points="140,65 180,45 180,90 140,110" fill="#075985" stroke="#38bdf8" stroke-width="1.5" />
+
+                <!-- Target 2D Projection Shape Indicator -->
+                <rect x="215" y="45" width="40" height="40" fill="none" stroke="#f43f5e" stroke-dasharray="3 3" stroke-width="1.5" rx="2" />
+                <text x="235" y="68" text-anchor="middle" fill="#fda4af" font-size="8" font-family="monospace">TARGET</text>
+                <text x="235" y="78" text-anchor="middle" fill="#fda4af" font-size="8" font-family="monospace">ALIGN 90°</text>
+              </svg>
+            </div>
+            }
+
+            <!-- Corner Gradient Tag -->
+            <div class="absolute bottom-2 right-2 text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900/90 text-slate-400 border border-slate-700/80">
+              {{ exhibit.duration }}
+            </div>
           </div>
 
-          <!-- Exhibit Title -->
-          <h3 class="text-xl font-bold tracking-tight mb-2">
-            {{ exhibit.title }}
-          </h3>
+          <!-- CARD CONTENT -->
+          <div class="p-6">
+            <!-- Header Badges -->
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="wing-badge">
+                {{ exhibit.wing }}
+              </span>
 
-          <!-- Discipline Subtitle -->
-          <div class="text-xs font-medium text-cyan-400/90 mb-3 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-            <span>{{ exhibit.discipline }}</span>
+              <!-- Difficulty Indicator -->
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/80 border border-slate-700/80 text-xs">
+                <span class="text-slate-400 text-[11px] font-medium">{{ exhibit.level }}</span>
+                <div class="flex gap-1 ml-1">
+                  <span class="w-1.5 h-1.5 rounded-full" [class.bg-cyan-400]="exhibit.difficultyRating >= 1" [class.bg-slate-700]="exhibit.difficultyRating < 1"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" [class.bg-cyan-400]="exhibit.difficultyRating >= 2" [class.bg-slate-700]="exhibit.difficultyRating < 2"></span>
+                  <span class="w-1.5 h-1.5 rounded-full" [class.bg-cyan-400]="exhibit.difficultyRating >= 3" [class.bg-slate-700]="exhibit.difficultyRating < 3"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Exhibit Title -->
+            <h3 class="text-2xl font-extrabold tracking-tight text-slate-100 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-300 group-hover:to-indigo-300 transition-all mb-1">
+              {{ exhibit.title }}
+            </h3>
+
+            <!-- Discipline Subtitle -->
+            <div class="text-xs font-semibold text-cyan-400/90 mb-3 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              <span>{{ exhibit.discipline }}</span>
+            </div>
+
+            <!-- Description -->
+            <p class="text-slate-300 text-sm leading-relaxed mb-4 line-clamp-3">
+              {{ exhibit.description }}
+            </p>
+
+            <!-- Skill Tags -->
+            <div class="flex flex-wrap gap-1.5 mb-6">
+              @for (skill of exhibit.skills; track skill) {
+              <span class="px-2 py-0.5 rounded-md bg-slate-950/70 border border-slate-800 text-[11px] text-slate-300 font-mono">
+                #{{ skill }}
+              </span>
+              }
+            </div>
           </div>
-
-          <!-- Description -->
-          <p class="text-slate-300 text-sm leading-relaxed mb-6">
-            {{ exhibit.description }}
-          </p>
         </div>
 
-        <!-- Footer Action -->
-        <div class="pt-4 mt-auto border-t border-slate-700/40 flex items-center justify-between gap-3">
-          <span class="text-xs text-slate-400 font-mono tracking-tight">
-            {{ exhibit.techBadge }}
-          </span>
-          <a [routerLink]="exhibit.route"
-            class="btn btn-primary inline-flex items-center gap-2 text-sm font-semibold transition-transform duration-200 hover:scale-105">
-            <span>Explore</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
+        <!-- CARD FOOTER ACTIONS -->
+        <div class="p-6 pt-0 mt-auto border-t border-slate-800/80">
+          <div class="pt-4 flex items-center justify-between gap-3">
+            <button type="button" (click)="openDetails(exhibit)"
+              class="text-xs font-semibold text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Info</span>
+            </button>
+
+            <a [routerLink]="exhibit.route"
+              class="btn btn-primary inline-flex items-center gap-2 text-sm font-bold tracking-wide">
+              <span>Launch Exhibit</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+          </div>
         </div>
+
       </div>
       } @empty {
       <div
-        class="col-span-full p-12 text-center bg-slate-900/30 backdrop-blur-md border border-slate-800 rounded-3xl">
+        class="col-span-full p-12 text-center bg-slate-900/40 backdrop-blur-md border border-slate-800 rounded-3xl">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-slate-500 mb-4" fill="none"
           viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h4 class="text-xl font-bold text-slate-300 mb-2">No exhibits found</h4>
+        <h4 class="text-xl font-bold text-slate-200 mb-2">No exhibits match your search</h4>
         <p class="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-          No museum exhibits matched your selected filter criteria. Try resetting the wing or search terms.
+          No museum installations found for the selected criteria. Clear your filters to explore all exhibits.
         </p>
         <button type="button" (click)="clearFilters()" class="btn btn-secondary text-sm">
-          Reset Filters
+          Reset Filter Selections
         </button>
       </div>
       }
     </div>
   </div>
+
+  <!-- Exhibit Details Modal -->
+  @if (activeModalExhibit(); as active) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div
+      class="relative w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.7)] text-slate-200">
+      <button type="button" (click)="closeDetails()"
+        class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer">
+        ✕
+      </button>
+
+      <div class="flex items-center gap-2 mb-3">
+        <span class="wing-badge">{{ active.wing }}</span>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-cyan-300 font-semibold border border-slate-700">{{ active.level }}</span>
+      </div>
+
+      <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">{{ active.title }}</h3>
+      <p class="text-xs text-cyan-400 font-medium mb-4">{{ active.discipline }} • {{ active.duration }} avg session</p>
+
+      <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">{{ active.description }}</p>
+
+      <div class="space-y-4 mb-8">
+        <div>
+          <h4 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Target Cognitive Competencies</h4>
+          <div class="flex flex-wrap gap-2">
+            @for (skill of active.skills; track skill) {
+            <span class="px-3 py-1 rounded-lg bg-slate-950 border border-slate-700 text-xs text-cyan-300 font-mono">
+              {{ skill }}
+            </span>
+            }
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-1">Installation Technology</h4>
+          <p class="text-xs text-slate-400 font-mono">{{ active.techBadge }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+        <button type="button" (click)="closeDetails()" class="btn btn-secondary text-sm">
+          Close
+        </button>
+        <a [routerLink]="active.route" (click)="closeDetails()" class="btn btn-primary text-sm font-bold">
+          Enter Installation
+        </a>
+      </div>
+    </div>
+  </div>
+  }
 </div>

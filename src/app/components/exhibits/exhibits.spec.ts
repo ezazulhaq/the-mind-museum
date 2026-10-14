@@ -38,4 +38,12 @@ describe('Exhibits', () => {
     expect(component.selectedWing()).toBe('All');
     expect(component.filteredExhibits().length).toBe(6);
   });
+
+  it('should manage modal details display', () => {
+    const firstExhibit = component.exhibits()[0];
+    component.openDetails(firstExhibit);
+    expect(component.activeModalExhibit()?.id).toBe(firstExhibit.id);
+    component.closeDetails();
+    expect(component.activeModalExhibit()).toBeNull();
+  });
 });

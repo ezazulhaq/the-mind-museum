@@ -70,7 +70,7 @@
 
     <!-- Grid Layout -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      @for (game of games(); track game; let i = $index) {
+      @for (game of games(); track game.id; let i = $index) {
       <div
         class="group relative bg-slate-900/40 backdrop-blur-md border border-slate-700/40 p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(6,182,212,0.3)] hover:bg-slate-800/60 overflow-hidden flex flex-col h-full hover:border-cyan-500/30">
         <!-- Animated top border gradient -->
