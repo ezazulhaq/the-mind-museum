@@ -1,21 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Exhibits } from './exhibits';
 
-describe('Exhibits', () => {
+describe('Exhibits Component', () => {
   let component: Exhibits;
-  let fixture: ComponentFixture<Exhibits>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Exhibits],
-      providers: [provideRouter([])],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(Exhibits);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+  beforeEach(() => {
+    component = new Exhibits();
   });
 
   it('should create', () => {
@@ -32,10 +22,18 @@ describe('Exhibits', () => {
     expect(component.filteredExhibits()[0].title).toBe('Logic Gate Defender');
   });
 
+  it('should filter exhibits by search query', () => {
+    component.onSearchChange('Dijkstra');
+    expect(component.filteredExhibits().length).toBe(1);
+    expect(component.filteredExhibits()[0].id).toBe('node-network');
+  });
+
   it('should reset filters', () => {
     component.setWing('Circuitry Wing');
+    component.onSearchChange('Logic');
     component.clearFilters();
     expect(component.selectedWing()).toBe('All');
+    expect(component.searchQuery()).toBe('');
     expect(component.filteredExhibits().length).toBe(6);
   });
 

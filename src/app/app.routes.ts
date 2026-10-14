@@ -14,7 +14,7 @@ import { Exhibits } from './components/exhibits/exhibits';
 export const routes: Routes = [
   { path: '', component: Lobby },
   { path: 'profile', component: ProfileSelector },
-  { path: 'dashboard', component: GameDashboard },
+  { path: 'dashboard', redirectTo: 'exhibits', pathMatch: 'full' },
   { path: 'exhibits', component: Exhibits },
   { path: 'analytics', component: AnalyticsDashboard },
   { path: 'games/terminal-velocity', component: TerminalVelocity },

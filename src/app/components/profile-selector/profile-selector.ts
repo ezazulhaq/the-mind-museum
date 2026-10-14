@@ -29,7 +29,7 @@ export class ProfileSelector {
 
     try {
       await this.playerState.setPlayer(name);
-      await this.router.navigate(['/dashboard']);
+      await this.router.navigate(['/exhibits']);
     } catch (err) {
       console.error('Error creating profile', err);
       this.loading.set(false);

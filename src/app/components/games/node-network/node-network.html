@@ -1,25 +1,67 @@
 <app-game-layout>
+  <!-- GAME AREA (LEFT) -->
   <div game-area
-    class="w-full h-full relative overflow-hidden flex flex-col items-center justify-center bg-slate-950 rounded-l-3xl">
-    <!-- Dynamic Background Glow -->
-    <div
-      class="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-cyan-900/10 blur-[100px] pointer-events-none animate-pulse"
-      style="animation-duration: 8s;"></div>
+    class="w-full h-full relative overflow-hidden flex flex-col items-center justify-center bg-slate-950 rounded-3xl">
 
-    <!-- UI Overlay for Stats -->
+    <!-- Ambient Glowing Background Grid -->
+    <div
+      class="absolute top-[-20%] left-[-10%] w-[55vw] h-[55vw] rounded-full bg-cyan-900/15 blur-[120px] pointer-events-none animate-pulse"
+      style="animation-duration: 9s;"></div>
+    <div
+      class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/15 blur-[120px] pointer-events-none animate-pulse"
+      style="animation-duration: 11s;"></div>
+
+    <!-- IN-GAME TOP HUD OVERLAY -->
     @if (gameState() !== 'MENU') {
-    <div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex gap-4">
-      <div
-        class="px-6 py-3 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner text-center">
-        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Level</p>
-        <p class="text-white font-mono text-xl">{{ currentLevelIndex() + 1 }}</p>
+    <div class="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center justify-center gap-3 w-full max-w-2xl px-4 pointer-events-auto">
+      <!-- Level Info -->
+      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
+        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Level</p>
+        <p class="text-white font-mono text-base font-bold">{{ currentLevelIndex() + 1 }}</p>
       </div>
-      <div
-        class="px-6 py-3 bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-inner text-center">
-        <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Moves / Optimal</p>
-        <p class="text-cyan-400 font-mono text-xl">{{ moves() }} <span class="text-slate-500 text-lg">/ {{
-            optimalMoves() }}</span></p>
+
+      <!-- Latency Meter -->
+      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
+        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Latency / Target</p>
+        <p class="text-cyan-400 font-mono text-base font-bold">
+          {{ accumulatedLatency() }}ms
+          <span class="text-slate-500 text-xs">/ {{ optimalCost() }}ms</span>
+        </p>
       </div>
+
+      <!-- Bandwidth Budget Gauge -->
+      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center min-w-36">
+        <div class="flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">
+          <span>Bandwidth</span>
+          <span [class.text-rose-400]="bandwidthPercent() < 25" [class.text-cyan-300]="bandwidthPercent() >= 25">
+            {{ remainingBandwidth() }}ms
+          </span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+          <div class="h-full transition-all duration-300"
+            [class.bg-emerald-400]="bandwidthPercent() > 50"
+            [class.bg-amber-400]="bandwidthPercent() <= 50 && bandwidthPercent() > 25"
+            [class.bg-rose-500]="bandwidthPercent() <= 25"
+            [style.width.%]="bandwidthPercent()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Mute Toggle Button -->
+      <button type="button" (click)="toggleAudio()"
+        class="p-2.5 bg-slate-900/85 hover:bg-slate-800 backdrop-blur-md text-slate-300 hover:text-white rounded-xl border border-slate-700/60 shadow-lg transition-colors cursor-pointer"
+        [title]="isMuted() ? 'Unmute Audio' : 'Mute Audio'">
+        @if (isMuted()) {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        } @else {
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+        </svg>
+        }
+      </button>
     </div>
     }
 
@@ -27,21 +69,46 @@
     <div class="relative z-10 flex-1 w-full h-full flex justify-center items-center overflow-hidden" #gameContainer>
     </div>
 
-    <!-- Main Menu Overlay -->
+    <!-- LEVEL SELECT MENU OVERLAY -->
     @if (gameState() === 'MENU') {
-    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
       <div
-        class="bg-slate-900/80 border border-slate-700/50 p-8 rounded-3xl text-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl w-full max-w-2xl mx-4">
+        class="bg-slate-900/90 border border-slate-700/60 p-6 sm:p-8 rounded-3xl text-center shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-xl w-full max-w-2xl">
+        <div class="inline-block mb-3">
+          <span class="px-3.5 py-1 rounded-full bg-cyan-950/90 border border-cyan-800 text-cyan-400 text-xs font-bold tracking-widest uppercase">
+            Systems Wing • Simulation
+          </span>
+        </div>
         <h2
-          class="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-indigo-400 mb-8 tracking-tighter">
-          Select Level
+          class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 mb-2 tracking-tight">
+          Node Network Topologies
         </h2>
-        <div class="grid grid-cols-5 gap-4">
+        <p class="text-slate-400 text-sm max-w-lg mx-auto mb-8">
+          Select a routing stage. Navigate packets along weighted data channels while avoiding firewall security zones.
+        </p>
+
+        <!-- 10 Level Buttons Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3.5 mb-6">
           @for (level of levels; track level.id) {
-          <button
-            class="aspect-square flex flex-col items-center justify-center bg-slate-800/60 border border-slate-600/50 hover:bg-slate-700/60 hover:border-cyan-500/50 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] group"
+          <button type="button"
+            class="p-4 flex flex-col items-center justify-center bg-slate-800/60 border border-slate-700/60 hover:bg-slate-700/70 hover:border-cyan-400/80 rounded-2xl transition-all duration-200 hover:scale-105 hover:shadow-[0_0_20px_rgba(34,211,238,0.25)] group cursor-pointer"
             (click)="startGame($index)">
-            <span class="text-2xl font-bold text-slate-300 group-hover:text-white">{{ level.id }}</span>
+            <span class="text-xs text-slate-400 font-mono mb-1">STG {{ level.id }}</span>
+            <span class="text-lg font-bold text-slate-200 group-hover:text-cyan-300 transition-colors">
+              {{ level.optimalCost }}ms
+            </span>
+
+            <!-- Earned Stars Indicator -->
+            <div class="flex items-center gap-0.5 mt-2">
+              @for (s of [1, 2, 3]; track s) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5"
+                [class.text-amber-400]="s <= (levelBestStars()[level.id] || 0)"
+                [class.text-slate-700]="s > (levelBestStars()[level.id] || 0)"
+                fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              }
+            </div>
           </button>
           }
         </div>
@@ -49,15 +116,17 @@
     </div>
     }
 
-    <!-- Level Complete Overlay -->
+    <!-- LEVEL SUCCESS OVERLAY -->
     @if (gameState() === 'LEVEL_COMPLETE') {
-    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
       <div
-        class="bg-slate-900 border border-emerald-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(16,185,129,0.2)] max-w-md w-full mx-4">
-        <h2 class="text-4xl font-extrabold text-emerald-400 mb-6 tracking-tighter">SUCCESS!</h2>
+        class="bg-slate-900 border border-emerald-500/50 p-8 sm:p-10 rounded-3xl text-center shadow-[0_0_50px_rgba(16,185,129,0.25)] max-w-md w-full">
+        <span class="text-xs uppercase tracking-widest text-emerald-400 font-bold mb-2 inline-block">Packet Delivered</span>
+        <h2 class="text-4xl font-extrabold text-white mb-6 tracking-tight">SUCCESS!</h2>
 
-        <div class="flex justify-center gap-2 mb-8">
-          @for (star of [1,2,3]; track star) {
+        <!-- Stars Rating -->
+        <div class="flex justify-center gap-2 mb-6">
+          @for (star of [1, 2, 3]; track star) {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 transition-all duration-500"
             [class.text-amber-400]="star <= stars()" [class.text-slate-700]="star > stars()"
             [class.scale-110]="star <= stars()" fill="currentColor" viewBox="0 0 24 24">
@@ -66,41 +135,74 @@
           }
         </div>
 
-        <p class="text-slate-300 mb-8 font-mono">
-          Completed in <span class="text-white font-bold">{{ moves() }}</span> moves.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <button class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
-            (click)="goToMenu()">
-            Menu
+        <!-- Telemetry Stats Breakdown -->
+        <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 mb-6 text-left space-y-2 text-sm font-mono">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Total Latency:</span>
+            <span class="text-cyan-400 font-bold">{{ accumulatedLatency() }} ms (Target: {{ optimalCost() }} ms)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Remaining Budget:</span>
+            <span class="text-emerald-400 font-bold">{{ remainingBandwidth() }} ms</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Routing Hops:</span>
+            <span class="text-white font-bold">{{ moves() }} hops</span>
+          </div>
+          @if (hintsUsed() > 0) {
+          <div class="flex justify-between text-amber-400 text-xs">
+            <span>Dijkstra Hints Used:</span>
+            <span>{{ hintsUsed() }} (-1 star penalty)</span>
+          </div>
+          }
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-3">
+          <button type="button" class="btn btn-secondary text-sm" (click)="goToMenu()">
+            Stage Select
           </button>
-          @if (currentLevelIndex() < levels.length - 1) { <button
-            class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)]"
+          <button type="button" class="btn btn-secondary text-sm" (click)="restartLevel()">
+            Retry
+          </button>
+          @if (currentLevelIndex() < levels.length - 1) {
+          <button type="button"
+            class="btn btn-primary text-sm font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)]"
             (click)="nextLevel()">
-            Next Level
-            </button>
-            }
+            Next Stage
+          </button>
+          }
         </div>
       </div>
     </div>
     }
 
-    <!-- Game Over Overlay -->
+    <!-- TIMEOUT / GAME OVER OVERLAY -->
     @if (gameState() === 'GAMEOVER') {
-    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+    <div class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
       <div
-        class="bg-slate-900 border-2 border-rose-500/50 p-12 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)] max-w-md w-full mx-4">
-        <h2 class="text-4xl font-extrabold text-rose-500 mb-4 tracking-tighter">SYSTEM FAILURE</h2>
-        <p class="text-lg text-slate-300 mb-8 font-mono">
-          Connection timed out. Too many routing hops taken.
+        class="bg-slate-900 border-2 border-rose-500/50 p-8 sm:p-10 rounded-3xl text-center shadow-[0_0_50px_rgba(225,29,72,0.3)] max-w-md w-full">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-rose-500 mb-2 tracking-tight">TRANSMISSION TIMEOUT</h2>
+        <p class="text-sm text-slate-300 mb-6 font-mono leading-relaxed">
+          Bandwidth capacity exhausted or maximum network hops exceeded. Packet discarded by router.
         </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <button class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
-            (click)="goToMenu()">
-            Menu
+
+        <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 mb-6 text-left space-y-2 text-xs font-mono">
+          <div class="flex justify-between text-slate-400">
+            <span>Latency Incurred:</span>
+            <span class="text-rose-400 font-bold">{{ accumulatedLatency() }} ms</span>
+          </div>
+          <div class="flex justify-between text-slate-400">
+            <span>Bandwidth Depleted:</span>
+            <span class="text-rose-400 font-bold">100%</span>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-3">
+          <button type="button" class="btn btn-secondary text-sm" (click)="goToMenu()">
+            Stage Select
           </button>
-          <button
-            class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(225,29,72,0.4)]"
+          <button type="button"
+            class="btn btn-primary text-sm font-bold bg-rose-600 hover:bg-rose-500 border-rose-500 shadow-[0_0_20px_rgba(244,63,94,0.4)]"
             (click)="restartLevel()">
             Retry Route
           </button>
@@ -110,44 +212,144 @@
     }
   </div>
 
-  <div control-panel class="w-full h-full flex flex-col justify-center gap-6">
+  <!-- CONTROL PANEL (RIGHT) -->
+  <div control-panel class="w-full h-full flex flex-col gap-6 overflow-y-auto">
+    <!-- Exhibit Title & Concept -->
     <div>
-      <h2 class="text-3xl font-extrabold text-white tracking-tighter mb-2">Node Network</h2>
-      <p class="text-slate-400 text-sm">
-        Connect data nodes efficiently without crossing paths to solve the network routing puzzles. Navigate the packet
-        from the blue source to the green destination.
+      <div class="flex items-center justify-between gap-2 mb-1">
+        <span class="text-xs uppercase tracking-widest text-cyan-400 font-bold">Systems Wing</span>
+        <button type="button" (click)="toggleAudio()" class="text-xs text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer">
+          {{ isMuted() ? 'Audio: Muted' : 'Audio: Active' }}
+        </button>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">Node Network</h2>
+      <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+        High-throughput packet routing simulation. Calculate minimal latency channels across dynamic graph topologies.
       </p>
     </div>
 
-    <div class="bg-slate-900/60 rounded-2xl border border-slate-700/50 p-6 shadow-inner">
-      <h3 class="text-cyan-400 font-bold mb-4 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    <!-- LIVE ROUTING TELEMETRY (When Playing) -->
+    @if (gameState() === 'PLAYING') {
+    <div class="bg-slate-900/70 rounded-2xl border border-slate-700/60 p-5 space-y-4 shadow-lg">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <span class="text-xs font-bold text-cyan-300 tracking-wider uppercase">Live Telemetry</span>
+        <span class="text-[11px] font-mono text-slate-400">NODE #{{ currentNodeIndex() }}</span>
+      </div>
+
+      <!-- Latency & Bandwidth Metrics Grid -->
+      <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <p class="text-slate-500 text-[10px] uppercase">Latency</p>
+          <p class="text-base font-bold text-cyan-400 mt-0.5">{{ accumulatedLatency() }} ms</p>
+          <p class="text-[10px] text-slate-500">Target: {{ optimalCost() }} ms</p>
+        </div>
+
+        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+          <p class="text-slate-500 text-[10px] uppercase">Bandwidth Budget</p>
+          <p class="text-base font-bold mt-0.5"
+            [class.text-emerald-400]="bandwidthPercent() > 50"
+            [class.text-amber-400]="bandwidthPercent() <= 50 && bandwidthPercent() > 25"
+            [class.text-rose-400]="bandwidthPercent() <= 25">
+            {{ remainingBandwidth() }} ms
+          </p>
+          <p class="text-[10px] text-slate-500">{{ bandwidthPercent() }}% capacity</p>
+        </div>
+      </div>
+
+      <!-- Edge Hover Cost Preview -->
+      @if (previewNextEdgeCost() !== null) {
+      <div class="p-2.5 bg-cyan-950/40 border border-cyan-800/60 rounded-xl text-xs text-cyan-300 flex items-center justify-between font-mono animate-pulse">
+        <span>Hovered Edge Latency:</span>
+        <span class="font-bold">+{{ previewNextEdgeCost() }} ms</span>
+      </div>
+      }
+
+      <!-- Traversed Path Breadcrumbs -->
+      <div>
+        <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-2">Traversed Route</p>
+        <div class="flex flex-wrap items-center gap-1.5 font-mono text-xs max-h-24 overflow-y-auto p-1">
+          @for (node of pathBreadcrumbs(); track $index) {
+          <span class="px-2 py-0.5 rounded-md bg-slate-950 border border-slate-800 text-slate-300">
+            N{{ node }}
+          </span>
+          @if (!$last) {
+          <span class="text-slate-600 text-xs">→</span>
+          }
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- DIJKSTRA HINT ASSISTANT -->
+    <div class="bg-slate-900/70 rounded-2xl border border-slate-700/60 p-5 shadow-lg space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-emerald-400 tracking-wider uppercase flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Dijkstra Assistant
+        </span>
+        @if (hintsUsed() > 0) {
+        <span class="text-[10px] text-amber-400 font-mono">Hint Active</span>
+        }
+      </div>
+
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Calculates the mathematically optimal next transmission step, routing around security firewalls.
+      </p>
+
+      <button type="button" (click)="requestDijkstraHint()"
+        class="w-full py-2.5 px-4 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-700/70 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
-        Data Flow Protocol
+        <span>Reveal Optimal Next Hop</span>
+      </button>
+
+      @if (activeHintNode() !== null) {
+      <div class="p-3 bg-emerald-950/70 border border-emerald-600 rounded-xl text-xs text-emerald-200 font-mono text-center animate-pulse">
+        Target Node highlighted: <strong>Node #{{ activeHintNode() }}</strong>
+      </div>
+      }
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="flex gap-2">
+      <button type="button" class="btn btn-secondary flex-1 text-xs" (click)="restartLevel()">
+        Reset Stage
+      </button>
+      <button type="button" class="btn btn-secondary flex-1 text-xs" (click)="goToMenu()">
+        Stage Select
+      </button>
+    </div>
+    } @else {
+    <!-- PROTOCOL INSTRUCTIONS CARD (In Menu) -->
+    <div class="bg-slate-900/70 rounded-2xl border border-slate-700/60 p-5 shadow-lg space-y-4">
+      <h3 class="text-cyan-400 font-bold text-sm tracking-wide uppercase flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Routing Rules & Constraints
       </h3>
-      <ul class="space-y-3 text-sm text-slate-300">
+      <ul class="space-y-2.5 text-xs text-slate-300 leading-relaxed">
         <li class="flex items-start gap-2">
-          <span class="text-cyan-500 font-bold mt-0.5">•</span>
-          Click adjacent connected nodes to route your packet.
+          <span class="text-cyan-400 font-bold">•</span>
+          <span><strong>Weighted Channels:</strong> Numbers on lines denote latency (ms). Choose low-cost paths.</span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-cyan-500 font-bold mt-0.5">•</span>
-          Finding the absolute shortest path grants 3 stars.
+          <span class="text-rose-400 font-bold">•</span>
+          <span><strong>Firewall Nodes:</strong> Crimson nodes block packet transmission. Clicking a firewall triggers alert shields.</span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-rose-400 font-bold mt-0.5">•</span>
-          Taking too many unnecessary detours will cause the connection to time out!
+          <span class="text-emerald-400 font-bold">•</span>
+          <span><strong>Bandwidth Budget:</strong> Each stage provides a finite latency pool. Avoid long detours.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 font-bold">•</span>
+          <span><strong>3-Star Evaluation:</strong> Reach the green target node at or below the theoretical Dijkstra optimum.</span>
         </li>
       </ul>
     </div>
-
-    @if (gameState() !== 'MENU') {
-    <button
-      class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl border border-slate-600 transition-colors"
-      (click)="goToMenu()">
-      Back to Level Select
-    </button>
     }
   </div>
 </app-game-layout>

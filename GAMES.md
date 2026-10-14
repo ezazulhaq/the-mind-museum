@@ -81,16 +81,18 @@ A physics-based sandbox puzzle game where players build Rube Goldberg-style mach
 
 ## 5. Node Network
 **Component:** `src/app/components/games/node-network`
-**Tech Stack:** Angular + Phaser 4
+**Tech Stack:** Angular + Phaser 4 + Web Audio API + Graph Theory (Dijkstra)
 
 **Functionality:**
-A graph-based pathfinding and routing puzzle featuring a "Cyberpunk Data Flow" visual theme.
-- The game consists of **10 hand-crafted levels** escalating in difficulty.
-- The player controls a "data packet" located on a blue starting node within a complex network of interconnected nodes.
-- The goal is to navigate the packet across the valid connecting lines (edges) to reach a green target destination node.
-- The player clicks on adjacent valid nodes to move the packet, triggering dynamic digital ripples and glowing path highlights.
-- **Scoring System (3-Stars):** Players are awarded up to 3 stars per level based on their efficiency. Finding the absolute optimal (shortest) path yields 3 stars, while taking slight detours yields fewer stars.
-- **Failure State:** If the packet exceeds a strict maximum move limit (absolute fail limit), the connection times out and the player must restart the level.
+An advanced graph-based routing simulation teaching network latency, weighted graph theory, and cybersecurity topologies.
+- Features **10 hand-crafted stages** with diverse network topologies and escalating routing complexity.
+- **Weighted Channels (Latency Costs):** Edges are annotated with millisecond latency costs (1ms–4ms). Traversal along an edge adds to the player's total accumulated transmission latency.
+- **Firewall Obstacles:** Key nodes are protected by active security firewalls (marked with crimson pulsing shields). Attempting to route through firewalls triggers audio-visual security alerts and camera shakes.
+- **Bandwidth Budget System:** Each stage allocates a finite bandwidth pool. Exhausting the pool before reaching the destination causes a transmission timeout failure.
+- **Dijkstra Hint Assistant:** An interactive assistant in the right control panel applies Dijkstra's algorithm to calculate the mathematically optimal next step, illuminating the target node with a glowing guidance beam (at the cost of a 1-star penalty).
+- **Procedural Cyberpunk Audio:** Built-in zero-dependency Web Audio synthesizer providing pitch-modulated routing chirps, firewall warning pulses, timeout alarms, and victory fanfares.
+- **Live Routing Telemetry:** Control panel delivers real-time HUD metrics including node IDs, hop counters, bandwidth capacity meters, and a sequential route breadcrumb trail.
+- **Scoring & Persistence:** 3-Star rating system based on meeting theoretical Dijkstra minimums. Best star ratings are saved locally and synced to backend telemetry.
 
 ---
 
