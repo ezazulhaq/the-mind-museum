@@ -13,26 +13,58 @@
 
     <!-- IN-GAME TOP HUD OVERLAY -->
     @if (gameState() !== 'MENU') {
-    <div class="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center justify-center gap-3 w-full max-w-2xl px-4 pointer-events-auto">
+    <div class="absolute top-5 left-1/2 -translate-x-1/2 z-20 flex flex-wrap items-center justify-center gap-3 w-full max-w-3xl px-4 pointer-events-auto">
       <!-- Level Info -->
-      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
-        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Level</p>
-        <p class="text-white font-mono text-base font-bold">{{ currentLevelIndex() + 1 }}</p>
+      <div class="px-3 py-1.5 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
+        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Stage</p>
+        <p class="text-white font-mono text-sm font-bold">{{ currentLevelIndex() + 1 }}</p>
+      </div>
+
+      <!-- Routing Mode Toggle Switcher -->
+      <div class="p-1 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/70 shadow-lg flex items-center gap-1">
+        <button type="button" (click)="setRoutingMode('LOW_LATENCY')"
+          class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5"
+          [class.bg-cyan-500/20]="routingMode() === 'LOW_LATENCY'"
+          [class.text-cyan-300]="routingMode() === 'LOW_LATENCY'"
+          [class.border]="routingMode() === 'LOW_LATENCY'"
+          [class.border-cyan-500/50]="routingMode() === 'LOW_LATENCY'"
+          [class.shadow-[0_0_12px_rgba(6,182,212,0.3)]]="routingMode() === 'LOW_LATENCY'"
+          [class.text-slate-400]="routingMode() !== 'LOW_LATENCY'">
+          <span>⚡ Low-Latency</span>
+        </button>
+        <button type="button" (click)="setRoutingMode('HIGH_BANDWIDTH')"
+          class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5"
+          [class.bg-emerald-500/20]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.text-emerald-300]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.border]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.border-emerald-500/50]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.shadow-[0_0_12px_rgba(16,185,129,0.3)]]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.text-slate-400]="routingMode() !== 'HIGH_BANDWIDTH'">
+          <span>📡 High-Bandwidth</span>
+        </button>
       </div>
 
       <!-- Latency Meter -->
-      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
-        <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Latency / Target</p>
-        <p class="text-cyan-400 font-mono text-base font-bold">
+      <div class="px-3.5 py-1.5 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
+        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Latency</p>
+        <p class="text-cyan-400 font-mono text-sm font-bold">
           {{ accumulatedLatency() }}ms
           <span class="text-slate-500 text-xs">/ {{ optimalCost() }}ms</span>
         </p>
       </div>
 
+      <!-- Throughput Bottleneck -->
+      <div class="px-3.5 py-1.5 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center">
+        <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Pipe Bottleneck</p>
+        <p class="text-emerald-400 font-mono text-sm font-bold">
+          {{ currentBottleneckBandwidth() }} Gbps
+        </p>
+      </div>
+
       <!-- Bandwidth Budget Gauge -->
-      <div class="px-4 py-2 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center min-w-36">
-        <div class="flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">
-          <span>Bandwidth</span>
+      <div class="px-3.5 py-1.5 bg-slate-900/85 backdrop-blur-md rounded-xl border border-slate-700/60 shadow-lg text-center min-w-32">
+        <div class="flex items-center justify-between text-[9px] text-slate-400 uppercase tracking-widest font-bold mb-1">
+          <span>Budget</span>
           <span [class.text-rose-400]="bandwidthPercent() < 25" [class.text-cyan-300]="bandwidthPercent() >= 25">
             {{ remainingBandwidth() }}ms
           </span>
@@ -52,12 +84,12 @@
         class="p-2.5 bg-slate-900/85 hover:bg-slate-800 backdrop-blur-md text-slate-300 hover:text-white rounded-xl border border-slate-700/60 shadow-lg transition-colors cursor-pointer"
         [title]="isMuted() ? 'Unmute Audio' : 'Mute Audio'">
         @if (isMuted()) {
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
         </svg>
         } @else {
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
         </svg>
         }
@@ -80,11 +112,11 @@
           </span>
         </div>
         <h2
-          class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-300 to-fuchsia-300 mb-2 tracking-tight">
+          class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-indigo-300 to-emerald-300 mb-2 tracking-tight">
           Node Network Topologies
         </h2>
         <p class="text-slate-400 text-sm max-w-lg mx-auto mb-8">
-          Select a routing stage. Navigate packets along weighted data channels while avoiding firewall security zones.
+          Select a routing stage. Navigate packets along weighted channels, toggle between low-latency routes and high-bandwidth optical trunks, and avoid firewall security zones.
         </p>
 
         <!-- 10 Level Buttons Grid -->
@@ -140,6 +172,10 @@
           <div class="flex justify-between">
             <span class="text-slate-400">Total Latency:</span>
             <span class="text-cyan-400 font-bold">{{ accumulatedLatency() }} ms (Target: {{ optimalCost() }} ms)</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Bottleneck Bandwidth:</span>
+            <span class="text-emerald-400 font-bold">{{ currentBottleneckBandwidth() }} Gbps</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-400">Remaining Budget:</span>
@@ -224,12 +260,60 @@
       </div>
       <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">Node Network</h2>
       <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
-        High-throughput packet routing simulation. Calculate minimal latency channels across dynamic graph topologies.
+        High-throughput packet routing simulation. Calculate minimal latency channels or maximize bandwidth throughput across dynamic graph topologies.
+      </p>
+    </div>
+
+    <!-- ROUTING METRIC TOGGLE CARD -->
+    @if (gameState() === 'PLAYING') {
+    <div class="bg-slate-900/70 rounded-2xl border border-slate-700/60 p-5 space-y-3.5 shadow-lg">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-300 tracking-wider uppercase">Optimization Metric</span>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full"
+          [class.bg-cyan-950]="routingMode() === 'LOW_LATENCY'"
+          [class.text-cyan-400]="routingMode() === 'LOW_LATENCY'"
+          [class.border]="true"
+          [class.border-cyan-800]="routingMode() === 'LOW_LATENCY'"
+          [class.bg-emerald-950]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.text-emerald-400]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.border-emerald-800]="routingMode() === 'HIGH_BANDWIDTH'">
+          {{ routingMode() === 'LOW_LATENCY' ? 'METRIC: LATENCY (ms)' : 'METRIC: BANDWIDTH (Gbps)' }}
+        </span>
+      </div>
+
+      <!-- Segmented Buttons -->
+      <div class="grid grid-cols-2 gap-2 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
+        <button type="button" (click)="setRoutingMode('LOW_LATENCY')"
+          class="py-2 px-3 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+          [class.bg-cyan-500]="routingMode() === 'LOW_LATENCY'"
+          [class.text-slate-950]="routingMode() === 'LOW_LATENCY'"
+          [class.shadow-md]="routingMode() === 'LOW_LATENCY'"
+          [class.text-slate-400]="routingMode() !== 'LOW_LATENCY'"
+          [class.hover:text-white]="routingMode() !== 'LOW_LATENCY'">
+          <span>⚡ Low Latency</span>
+        </button>
+
+        <button type="button" (click)="setRoutingMode('HIGH_BANDWIDTH')"
+          class="py-2 px-3 rounded-lg text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+          [class.bg-emerald-500]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.text-slate-950]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.shadow-md]="routingMode() === 'HIGH_BANDWIDTH'"
+          [class.text-slate-400]="routingMode() !== 'HIGH_BANDWIDTH'"
+          [class.hover:text-white]="routingMode() !== 'HIGH_BANDWIDTH'">
+          <span>📡 High Bandwidth</span>
+        </button>
+      </div>
+
+      <p class="text-[11px] text-slate-400 leading-relaxed font-mono">
+        @if (routingMode() === 'LOW_LATENCY') {
+        <span>Minimizes cumulative milliseconds delay along network edges. Best for real-time transactions.</span>
+        } @else {
+        <span>Prioritizes high-capacity optical backbones (100G) with lower routing impedance. Best for high-volume streaming.</span>
+        }
       </p>
     </div>
 
     <!-- LIVE ROUTING TELEMETRY (When Playing) -->
-    @if (gameState() === 'PLAYING') {
     <div class="bg-slate-900/70 rounded-2xl border border-slate-700/60 p-5 space-y-4 shadow-lg">
       <div class="flex items-center justify-between border-b border-slate-800 pb-2">
         <span class="text-xs font-bold text-cyan-300 tracking-wider uppercase">Live Telemetry</span>
@@ -245,22 +329,23 @@
         </div>
 
         <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
-          <p class="text-slate-500 text-[10px] uppercase">Bandwidth Budget</p>
-          <p class="text-base font-bold mt-0.5"
-            [class.text-emerald-400]="bandwidthPercent() > 50"
-            [class.text-amber-400]="bandwidthPercent() <= 50 && bandwidthPercent() > 25"
-            [class.text-rose-400]="bandwidthPercent() <= 25">
-            {{ remainingBandwidth() }} ms
-          </p>
-          <p class="text-[10px] text-slate-500">{{ bandwidthPercent() }}% capacity</p>
+          <p class="text-slate-500 text-[10px] uppercase">Bottleneck Pipe</p>
+          <p class="text-base font-bold text-emerald-400 mt-0.5">{{ currentBottleneckBandwidth() }} Gbps</p>
+          <p class="text-[10px] text-slate-500">{{ remainingBandwidth() }}ms budget left</p>
         </div>
       </div>
 
       <!-- Edge Hover Cost Preview -->
-      @if (previewNextEdgeCost() !== null) {
-      <div class="p-2.5 bg-cyan-950/40 border border-cyan-800/60 rounded-xl text-xs text-cyan-300 flex items-center justify-between font-mono animate-pulse">
-        <span>Hovered Edge Latency:</span>
-        <span class="font-bold">+{{ previewNextEdgeCost() }} ms</span>
+      @if (previewNextEdge() !== null) {
+      <div class="p-3 bg-cyan-950/40 border border-cyan-800/60 rounded-xl text-xs text-cyan-300 font-mono animate-pulse flex flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Hovered Link Latency:</span>
+          <span class="font-bold text-cyan-300">+{{ previewNextEdge()?.latency }} ms</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-400">Hovered Link Capacity:</span>
+          <span class="font-bold text-emerald-300">{{ previewNextEdge()?.bandwidth }} Gbps</span>
+        </div>
       </div>
       }
 
@@ -289,13 +374,13 @@
           </svg>
           Dijkstra Assistant
         </span>
-        @if (hintsUsed() > 0) {
-        <span class="text-[10px] text-amber-400 font-mono">Hint Active</span>
-        }
+        <span class="text-[10px] font-mono text-slate-400">
+          Target: {{ routingMode() === 'LOW_LATENCY' ? 'Min Delay' : 'Max Bandwidth' }}
+        </span>
       </div>
 
       <p class="text-xs text-slate-400 leading-relaxed">
-        Calculates the mathematically optimal next transmission step, routing around security firewalls.
+        Solves shortest path based on the active <strong>{{ routingMode() === 'LOW_LATENCY' ? 'Low-Latency (ms)' : 'High-Bandwidth (Gbps)' }}</strong> metric, routing safely around firewalls.
       </p>
 
       <button type="button" (click)="requestDijkstraHint()"
@@ -308,7 +393,7 @@
 
       @if (activeHintNode() !== null) {
       <div class="p-3 bg-emerald-950/70 border border-emerald-600 rounded-xl text-xs text-emerald-200 font-mono text-center animate-pulse">
-        Target Node highlighted: <strong>Node #{{ activeHintNode() }}</strong>
+        Target Node highlighted: <strong>Node #{{ activeHintNode() }}</strong> ({{ routingMode() === 'LOW_LATENCY' ? 'Lowest Latency Path' : 'High Throughput Path' }})
       </div>
       }
     </div>
@@ -329,24 +414,28 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        Routing Rules & Constraints
+        Routing Rules & Dual Metrics
       </h3>
       <ul class="space-y-2.5 text-xs text-slate-300 leading-relaxed">
         <li class="flex items-start gap-2">
           <span class="text-cyan-400 font-bold">•</span>
-          <span><strong>Weighted Channels:</strong> Numbers on lines denote latency (ms). Choose low-cost paths.</span>
+          <span><strong>Dual Weight Metrics:</strong> Toggle dynamically between <em>Low-Latency</em> (ms delay) and <em>High-Bandwidth</em> (Gbps throughput) on all channels.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-400 font-bold">•</span>
+          <span><strong>High-Bandwidth Trunks:</strong> 100G optical lines provide massive data throughput with reduced routing impedance.</span>
         </li>
         <li class="flex items-start gap-2">
           <span class="text-rose-400 font-bold">•</span>
           <span><strong>Firewall Nodes:</strong> Crimson nodes block packet transmission. Clicking a firewall triggers alert shields.</span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-emerald-400 font-bold">•</span>
+          <span class="text-amber-400 font-bold">•</span>
           <span><strong>Bandwidth Budget:</strong> Each stage provides a finite latency pool. Avoid long detours.</span>
         </li>
         <li class="flex items-start gap-2">
-          <span class="text-amber-400 font-bold">•</span>
-          <span><strong>3-Star Evaluation:</strong> Reach the green target node at or below the theoretical Dijkstra optimum.</span>
+          <span class="text-cyan-300 font-bold">•</span>
+          <span><strong>Adaptive Dijkstra:</strong> The hint assistant adapts its path calculation to whichever routing mode is active.</span>
         </li>
       </ul>
     </div>

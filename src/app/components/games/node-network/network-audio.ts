@@ -196,4 +196,35 @@ export class NetworkAudioSynthesizer {
       // Audio errors are non-critical
     }
   }
+
+  /**
+   * Sound played when toggling between Low-Latency and High-Bandwidth modes.
+   */
+  playModeSwitch(mode: 'LOW_LATENCY' | 'HIGH_BANDWIDTH'): void {
+    if (this.isMuted) return;
+    const ctx = this.initContext();
+    if (!ctx) return;
+
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      const freq = mode === 'LOW_LATENCY' ? 784 : 440; // G5 vs A4
+      osc.type = mode === 'LOW_LATENCY' ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.3, now + 0.1);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.16);
+    } catch {
+      // Audio errors are non-critical
+    }
+  }
 }

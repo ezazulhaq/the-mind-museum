@@ -86,12 +86,14 @@ A physics-based sandbox puzzle game where players build Rube Goldberg-style mach
 **Functionality:**
 An advanced graph-based routing simulation teaching network latency, weighted graph theory, and cybersecurity topologies.
 - Features **10 hand-crafted stages** with diverse network topologies and escalating routing complexity.
-- **Weighted Channels (Latency Costs):** Edges are annotated with millisecond latency costs (1ms–4ms). Traversal along an edge adds to the player's total accumulated transmission latency.
+- **Dynamic Edge Weights & Dual Routing Metrics:** Edges feature explicit `latency` (ms) and `bandwidth` (Gbps) properties. Users can dynamically toggle between:
+  - **⚡ Low-Latency Mode:** Minimizes cumulative transmission delay (ms), annotating edges with latency cost badges (e.g., `2ms`).
+  - **📡 High-Bandwidth Mode:** Prioritizes wide optical backbones (100G) by minimizing link impedance, annotating edges with throughput badges (e.g., `100G`) and widening fiber trunk graphics.
 - **Firewall Obstacles:** Key nodes are protected by active security firewalls (marked with crimson pulsing shields). Attempting to route through firewalls triggers audio-visual security alerts and camera shakes.
 - **Bandwidth Budget System:** Each stage allocates a finite bandwidth pool. Exhausting the pool before reaching the destination causes a transmission timeout failure.
-- **Dijkstra Hint Assistant:** An interactive assistant in the right control panel applies Dijkstra's algorithm to calculate the mathematically optimal next step, illuminating the target node with a glowing guidance beam (at the cost of a 1-star penalty).
-- **Procedural Cyberpunk Audio:** Built-in zero-dependency Web Audio synthesizer providing pitch-modulated routing chirps, firewall warning pulses, timeout alarms, and victory fanfares.
-- **Live Routing Telemetry:** Control panel delivers real-time HUD metrics including node IDs, hop counters, bandwidth capacity meters, and a sequential route breadcrumb trail.
+- **Adaptive Dijkstra Hint Assistant:** Applies Dijkstra's algorithm based on the active routing metric (Low-Latency vs High-Bandwidth), illuminating optimal guidance beams and halos around the next hop.
+- **Procedural Cyberpunk Audio:** Built-in zero-dependency Web Audio synthesizer providing pitch-modulated routing chirps, mode-switching chimes, firewall warning pulses, timeout alarms, and victory fanfares.
+- **Live Routing Telemetry:** Control panel delivers real-time HUD metrics including node IDs, hop counters, bottleneck throughput (Gbps), bandwidth capacity meters, and a sequential route breadcrumb trail.
 - **Scoring & Persistence:** 3-Star rating system based on meeting theoretical Dijkstra minimums. Best star ratings are saved locally and synced to backend telemetry.
 
 ---

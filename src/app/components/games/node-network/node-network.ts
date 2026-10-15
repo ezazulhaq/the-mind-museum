@@ -13,7 +13,14 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 
 import { GameLayout } from '../../game-layout/game-layout';
-import { LEVELS, LevelConfig, findShortestPath, WeightedEdge } from './levels';
+import {
+  LEVELS,
+  LevelConfig,
+  findShortestPath,
+  WeightedEdge,
+  RoutingMode,
+  getEdgeWeight,
+} from './levels';
 import { NetworkAudioSynthesizer } from './network-audio';
 import { PlayerStateService } from '../../../services/player-state.service';
 
@@ -37,6 +44,7 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
   readonly levels = LEVELS;
   readonly currentLevelIndex = signal(0);
   readonly gameState = signal<'MENU' | 'PLAYING' | 'LEVEL_COMPLETE' | 'GAMEOVER'>('MENU');
+  readonly routingMode = signal<RoutingMode>('LOW_LATENCY');
   readonly stars = signal(0);
   readonly moves = signal(0);
   readonly optimalMoves = signal(0);
@@ -44,12 +52,14 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
   readonly optimalCost = signal(0);
   readonly remainingBandwidth = signal(0);
   readonly initialBandwidth = signal(0);
+  readonly currentBottleneckBandwidth = signal<number>(100);
   readonly pathBreadcrumbs = signal<number[]>([]);
   readonly currentNodeIndex = signal(0);
   readonly hintsUsed = signal(0);
   readonly activeHintNode = signal<number | null>(null);
   readonly isMuted = signal(false);
   readonly previewNextEdgeCost = signal<number | null>(null);
+  readonly previewNextEdge = signal<{ latency: number; bandwidth: number; weight: number } | null>(null);
   readonly levelBestStars = signal<Record<number, number>>(this.loadSavedStars());
 
   readonly bandwidthPercent = computed(() => {
@@ -95,10 +105,12 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
         currentNode = 0;
         accumulatedLatency = 0;
         remainingBandwidth = 0;
+        bottleneckBandwidth = Infinity;
         gameOver = false;
         isMoving = false;
+        currentRoutingMode: RoutingMode = 'LOW_LATENCY';
 
-        adj: { [key: number]: { neighbor: number; weight: number }[] } = {};
+        adj: { [key: number]: { neighbor: number; weight: number; edge: WeightedEdge }[] } = {};
         firewalls: Set<number> = new Set();
         nodesData: { id: number; x: number; y: number }[] = [];
         nodeObjects: Phaser.GameObjects.Arc[] = [];
@@ -123,10 +135,12 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
         create() {
           if (!this.levelConfig) return;
           component.currentScene = this;
+          this.currentRoutingMode = component.routingMode();
 
           this.moves = 0;
           this.accumulatedLatency = 0;
           this.remainingBandwidth = this.levelConfig.bandwidthBudget;
+          this.bottleneckBandwidth = 100;
           this.maxMoves = this.levelConfig.optimalMoves * 2 + 4;
           this.currentNode = this.levelConfig.start;
           this.gameOver = false;
@@ -142,19 +156,16 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
           component.optimalCost.set(this.levelConfig.optimalCost);
           component.remainingBandwidth.set(this.levelConfig.bandwidthBudget);
           component.initialBandwidth.set(this.levelConfig.bandwidthBudget);
+          component.currentBottleneckBandwidth.set(100);
           component.currentNodeIndex.set(this.currentNode);
           component.pathBreadcrumbs.set([this.currentNode]);
           component.hintsUsed.set(0);
           component.activeHintNode.set(null);
           component.previewNextEdgeCost.set(null);
+          component.previewNextEdge.set(null);
 
-          // Build adjacency graph with weights
-          this.adj = {};
-          for (let i = 0; i < 36; i++) this.adj[i] = [];
-          this.levelConfig.edges.forEach(({ u, v, weight }) => {
-            this.adj[u].push({ neighbor: v, weight });
-            this.adj[v].push({ neighbor: u, weight });
-          });
+          // Build adjacency graph with weights based on active mode
+          this.rebuildAdjacency();
 
           // 6x6 Grid with centered coordinates
           this.nodesData = [];
@@ -257,6 +268,11 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
                 if (edge) {
                   circle.setScale(1.25);
                   component.previewNextEdgeCost.set(edge.weight);
+                  component.previewNextEdge.set({
+                    latency: edge.edge.latency,
+                    bandwidth: edge.edge.bandwidth,
+                    weight: edge.weight,
+                  });
                 } else if (isFirewall) {
                   circle.setScale(1.15);
                 }
@@ -265,6 +281,7 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
               circle.on('pointerout', () => {
                 circle.setScale(1);
                 component.previewNextEdgeCost.set(null);
+                component.previewNextEdge.set(null);
               });
 
               circle.on('pointerdown', () => {
@@ -293,21 +310,26 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
 
                 this.isMoving = true;
                 const weight = edge.weight;
+                const latency = edge.edge.latency;
+                const bandwidth = edge.edge.bandwidth;
+
                 this.currentNode = n.id;
                 this.moves++;
-                this.accumulatedLatency += weight;
-                this.remainingBandwidth -= weight;
+                this.accumulatedLatency += latency;
+                this.remainingBandwidth -= latency;
+                this.bottleneckBandwidth = Math.min(this.bottleneckBandwidth, bandwidth);
 
                 component.moves.set(this.moves);
                 component.accumulatedLatency.set(this.accumulatedLatency);
                 component.remainingBandwidth.set(Math.max(0, this.remainingBandwidth));
+                component.currentBottleneckBandwidth.set(this.bottleneckBandwidth);
                 component.currentNodeIndex.set(this.currentNode);
                 component.pathBreadcrumbs.update((crumbs) => [...crumbs, n.id]);
                 component.activeHintNode.set(null);
                 this.hintGraphics.clear();
 
                 // Sound feedback
-                component.audio.playHop(n.id, weight);
+                component.audio.playHop(n.id, latency);
 
                 // Digital ripple animation on target
                 const ripple = this.add.circle(n.x, n.y, 8, 0x38bdf8).setStrokeStyle(2, 0x7dd3fc);
@@ -371,30 +393,79 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
           this.updateHighlights();
         }
 
+        rebuildAdjacency() {
+          this.adj = {};
+          for (let i = 0; i < 36; i++) this.adj[i] = [];
+          this.levelConfig.edges.forEach((edge) => {
+            const w = getEdgeWeight(edge, this.currentRoutingMode);
+            this.adj[edge.u].push({ neighbor: edge.v, weight: w, edge });
+            this.adj[edge.v].push({ neighbor: edge.u, weight: w, edge });
+          });
+        }
+
+        setRoutingMode(mode: RoutingMode) {
+          this.currentRoutingMode = mode;
+          this.rebuildAdjacency();
+          this.drawEdges();
+          this.updateHighlights();
+        }
+
         drawEdges() {
           this.edgesGraphics.clear();
           this.edgeLabels.forEach((label) => label.destroy());
           this.edgeLabels = [];
 
-          this.levelConfig.edges.forEach(({ u, v, weight }) => {
-            const nodeU = this.nodesData[u];
-            const nodeV = this.nodesData[v];
-            const isFirewallEdge = this.firewalls.has(u) || this.firewalls.has(v);
+          this.levelConfig.edges.forEach((edge) => {
+            const nodeU = this.nodesData[edge.u];
+            const nodeV = this.nodesData[edge.v];
+            const isFirewallEdge = this.firewalls.has(edge.u) || this.firewalls.has(edge.v);
 
-            // Line style: firewall edges are dimmed red; regular are slate
-            const lineColor = isFirewallEdge ? 0x4c0519 : 0x1e293b;
-            const lineAlpha = isFirewallEdge ? 0.6 : 0.85;
-            this.edgesGraphics.lineStyle(2, lineColor, lineAlpha);
+            let lineWidth = 2;
+            let lineColor = 0x1e293b;
+            let lineAlpha = 0.85;
+
+            if (isFirewallEdge) {
+              lineColor = 0x4c0519;
+              lineAlpha = 0.6;
+            } else if (this.currentRoutingMode === 'HIGH_BANDWIDTH') {
+              if (edge.bandwidth >= 100) {
+                lineWidth = 3.5;
+                lineColor = 0x065f46; // Rich emerald fiber
+                lineAlpha = 0.95;
+              } else if (edge.bandwidth >= 50) {
+                lineWidth = 2.5;
+                lineColor = 0x0f766e;
+                lineAlpha = 0.85;
+              } else {
+                lineWidth = 1.5;
+                lineColor = 0x1e293b;
+                lineAlpha = 0.6;
+              }
+            }
+
+            this.edgesGraphics.lineStyle(lineWidth, lineColor, lineAlpha);
             this.edgesGraphics.lineBetween(nodeU.x, nodeU.y, nodeV.x, nodeV.y);
 
             // Midpoint coordinates for weight badge
             const midX = (nodeU.x + nodeV.x) / 2;
             const midY = (nodeU.y + nodeV.y) / 2;
 
-            const badgeText = this.add.text(midX, midY, `${weight}`, {
-              fontSize: '11px',
+            // In Low-Latency, show `${latency}ms`. In High-Bandwidth, show `${bandwidth}G`
+            const labelText =
+              this.currentRoutingMode === 'LOW_LATENCY'
+                ? `${edge.latency}ms`
+                : `${edge.bandwidth}G`;
+
+            const labelColor = isFirewallEdge
+              ? '#f43f5e'
+              : this.currentRoutingMode === 'LOW_LATENCY'
+              ? '#38bdf8'
+              : '#34d399';
+
+            const badgeText = this.add.text(midX, midY, labelText, {
+              fontSize: '10px',
               fontFamily: 'monospace',
-              color: isFirewallEdge ? '#f43f5e' : '#38bdf8',
+              color: labelColor,
               backgroundColor: '#030712dd',
               padding: { x: 3, y: 1 },
             }).setOrigin(0.5).setDepth(3);
@@ -409,10 +480,16 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
 
           // Highlight reachable edges from current position
           const edgesFromCurrent = this.adj[this.currentNode] || [];
-          edgesFromCurrent.forEach(({ neighbor }) => {
+          edgesFromCurrent.forEach(({ neighbor, edge }) => {
             const isFirewall = this.firewalls.has(neighbor);
-            const color = isFirewall ? 0xf43f5e : 0x0ea5e9;
-            const alpha = isFirewall ? 0.3 : 0.6;
+            let color = 0x0ea5e9;
+            if (isFirewall) {
+              color = 0xf43f5e;
+            } else if (this.currentRoutingMode === 'HIGH_BANDWIDTH') {
+              color = edge.bandwidth >= 100 ? 0x10b981 : 0x06b6d4;
+            }
+
+            const alpha = isFirewall ? 0.3 : 0.65;
             this.glowGraphics.lineStyle(3, color, alpha);
             this.glowGraphics.lineBetween(
               this.nodesData[this.currentNode].x,
@@ -428,8 +505,10 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
           const targetNode = this.nodesData[nextStep];
           if (!targetNode) return;
 
+          const hintColor = this.currentRoutingMode === 'LOW_LATENCY' ? 0x38bdf8 : 0x34d399;
+
           // Draw animated pulsing line from current to next optimal step
-          this.hintGraphics.lineStyle(4, 0x34d399, 0.9);
+          this.hintGraphics.lineStyle(4, hintColor, 0.9);
           this.hintGraphics.lineBetween(
             this.nodesData[this.currentNode].x,
             this.nodesData[this.currentNode].y,
@@ -438,7 +517,7 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
           );
 
           // Pulsing halo on the target node
-          const halo = this.add.circle(targetNode.x, targetNode.y, 28, 0x34d399, 0.25).setDepth(6);
+          const halo = this.add.circle(targetNode.x, targetNode.y, 28, hintColor, 0.25).setDepth(6);
           this.tweens.add({
             targets: halo,
             scale: 1.4,
@@ -458,7 +537,8 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
           const v = this.nodesData[edge.v];
           if (!u || !v) return;
 
-          const pulse = this.add.circle(u.x, u.y, 3.5, 0x38bdf8).setDepth(4);
+          const tintColor = this.currentRoutingMode === 'LOW_LATENCY' ? 0x38bdf8 : 0x34d399;
+          const pulse = this.add.circle(u.x, u.y, 3.5, tintColor).setDepth(4);
           this.tweens.add({
             targets: pulse,
             x: v.x,
@@ -502,7 +582,13 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
             victoryEmitter.explode(35);
 
             // Log Telemetry to Museum Backend
-            component.logCompletionTelemetry(this.levelConfig.id, earnedStars, this.accumulatedLatency, this.moves);
+            component.logCompletionTelemetry(
+              this.levelConfig.id,
+              earnedStars,
+              this.accumulatedLatency,
+              this.moves,
+              this.bottleneckBandwidth
+            );
 
           } else if (this.remainingBandwidth <= 0 || this.moves >= this.maxMoves) {
             this.gameOver = true;
@@ -529,11 +615,18 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
     }
   }
 
-  private async logCompletionTelemetry(levelId: number, stars: number, latency: number, hops: number) {
+  private async logCompletionTelemetry(
+    levelId: number,
+    stars: number,
+    latency: number,
+    hops: number,
+    bottleneckBw: number
+  ) {
     try {
       const sessionId = await this.playerState.createSession(`node-network-lvl-${levelId}`);
       if (sessionId) {
         this.playerState.logTelemetry(sessionId, 'LATENCY_MS', latency, { levelId, hops, stars });
+        this.playerState.logTelemetry(sessionId, 'BOTTLENECK_GBPS', bottleneckBw, { levelId });
         this.playerState.logTelemetry(sessionId, 'NETWORK_STARS', stars, { levelId, latency });
       }
     } catch {
@@ -547,6 +640,24 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
     if (this.game) {
       this.game.scene.start('MainScene', { levelConfig: this.levels[index] });
     }
+  }
+
+  setRoutingMode(mode: RoutingMode) {
+    if (this.routingMode() === mode) return;
+    this.routingMode.set(mode);
+    this.audio.playModeSwitch(mode);
+    if (this.currentScene) {
+      this.currentScene.setRoutingMode(mode);
+    }
+    // If Dijkstra hint is already shown, refresh it for the new mode without charging a penalty
+    if (this.activeHintNode() !== null) {
+      this.requestDijkstraHint(false);
+    }
+  }
+
+  toggleRoutingMode() {
+    const nextMode = this.routingMode() === 'LOW_LATENCY' ? 'HIGH_BANDWIDTH' : 'LOW_LATENCY';
+    this.setRoutingMode(nextMode);
   }
 
   nextLevel() {
@@ -573,16 +684,19 @@ export class NodeNetwork implements AfterViewInit, OnDestroy {
     this.isMuted.set(muted);
   }
 
-  requestDijkstraHint() {
+  requestDijkstraHint(chargeHintPenalty: boolean = true) {
     if (this.gameState() !== 'PLAYING') return;
     const level = this.levels[this.currentLevelIndex()];
     const current = this.currentNodeIndex();
-    const result = findShortestPath(level, current, level.end, true);
+    const mode = this.routingMode();
+    const result = findShortestPath(level, current, level.end, true, mode);
 
     if (result.nextStep !== null) {
       this.activeHintNode.set(result.nextStep);
-      this.hintsUsed.update((h) => h + 1);
-      this.audio.playHintChime();
+      if (chargeHintPenalty) {
+        this.hintsUsed.update((h) => h + 1);
+        this.audio.playHintChime();
+      }
       if (this.currentScene) {
         this.currentScene.showDijkstraHint(result.nextStep);
       }
