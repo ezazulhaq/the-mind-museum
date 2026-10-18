@@ -90,9 +90,28 @@ function saveConfig(config) {
  * Detect package manager from lock file in project directory
  */
 function detectFromLockFile(projectDir = process.cwd()) {
+  // Sanitize untrusted input: only accept non-empty strings, otherwise fall
+  // back to the current working directory (the default parameter only covers
+  // undefined, so explicit null/non-string values would otherwise crash or
+  // be joined verbatim into the filesystem path).
+  const baseDir = typeof projectDir === 'string' && projectDir.trim() !== ''
+    ? projectDir
+    : process.cwd();
+
+  // Canonicalize with path.resolve: path.join/path.normalize do not
+  // neutralize '..' traversal segments.
+  const resolvedBase = path.resolve(baseDir);
+
   for (const pmName of DETECTION_PRIORITY) {
     const pm = PACKAGE_MANAGERS[pmName];
-    const lockFilePath = path.join(projectDir, pm.lockFile);
+    const lockFilePath = path.resolve(resolvedBase, pm.lockFile);
+
+    // Containment guard: never probe the filesystem for a path that escapes
+    // the resolved base directory (path traversal protection).
+    const rel = path.relative(resolvedBase, lockFilePath);
+    if (rel === '' || rel.startsWith('..') || path.isAbsolute(rel)) {
+      continue;
+    }
 
     if (fs.existsSync(lockFilePath)) {
       return pmName;
