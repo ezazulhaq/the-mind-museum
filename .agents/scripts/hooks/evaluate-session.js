@@ -13,6 +13,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const {
   getLearnedSkillsDir,
   ensureDir,
@@ -39,7 +40,7 @@ async function main() {
 
       if (config.learned_skills_path) {
         // Handle ~ in path
-        learnedSkillsPath = config.learned_skills_path.replace(/^~/, require('os').homedir());
+        learnedSkillsPath = config.learned_skills_path.replace(/^~/, os.homedir());
       }
     } catch {
       // Invalid config, use defaults
